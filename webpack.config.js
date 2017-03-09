@@ -4,7 +4,7 @@ module.exports = {
   entry: {
     basic: './lib/js/examples/basic/basicSubscription.js',
     react: './lib/js/examples/react/component.js',
-    immutable: './lib/js/examples/immutable/immutable.js',
+    immutable: './lib/js/examples/immutable/immutableEntry.js',
   },
   output: {
     path: path.join(__dirname, "bundledOutputs"),
