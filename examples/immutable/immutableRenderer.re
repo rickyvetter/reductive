@@ -1,9 +1,6 @@
 module ImmutableRenderer = {
   include ReactRe.Component;
-  type props = {
-    state: TimeTravelStore.appState,
-    dispatch: ReduxThunk.thunk TimeTravelStore.appState => unit
-  };
+  type props = {state: AppState.appState, dispatch: ReduxThunk.thunk AppState.appState => unit};
   let name = "ImmutableRenderer";
   let handleClick _ _ => {
     Js.log "clicked!";
@@ -19,7 +16,7 @@ module ImmutableRenderer = {
         1000
     );
   let incrementIfOdd
-      (store: Reductive.Store.t (ReduxThunk.thunk TimeTravelStore.appState) TimeTravelStore.appState) =>
+      (store: Reductive.Store.t (ReduxThunk.thunk AppState.appState) AppState.appState) =>
     switch (Reductive.Store.getState store) {
     | {counter} when counter mod 2 === 1 =>
       Reductive.Store.dispatch store (TimeTravelStore.CounterAction CounterStore.Increment)
@@ -45,6 +42,12 @@ module ImmutableRenderer = {
       </button>
       <button onClick=(fun _ => props.dispatch (ReduxThunk.Thunk incrementIfOdd))>
         (ReactRe.stringToElement "Increment if Odd")
+      </button>
+      <button onClick=(fun _ => props.dispatch TimeTravelStore.TravelBackward)>
+        (ReactRe.stringToElement "Undo")
+      </button>
+      <button onClick=(fun _ => props.dispatch TimeTravelStore.TravelForward)>
+        (ReactRe.stringToElement "Redo")
       </button>
     </div>;
 };

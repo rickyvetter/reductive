@@ -14,14 +14,63 @@ type ReduxThunk.thunk _ +=
   | StringAction stringAction
   | CounterAction action;
 
-type appState = {counter: int, notACounter: string};
+type ReduxThunk.thunk 'a +=
+  | ReplaceState 'a;
 
-let appReducter state action =>
+let appReducter (state: AppState.appState) action =>
   switch action {
   | StringAction action => {...state, notACounter: stringReduce state.notACounter action}
   | CounterAction action => {...state, counter: counter state.counter action}
+  | ReplaceState replacedState => replacedState
   | _ => state
   };
+
+type ReduxThunk.thunk _ +=
+  | TravelBackward
+  | TravelForward;
+
+let past = ref Immutable.Stack.empty;
+
+let future = ref Immutable.Stack.empty;
+
+let goBack currentState => {
+  Js.log (Immutable.Stack.tryFirst !past);
+  switch (Immutable.Stack.tryFirst !past) {
+  | Some lastState =>
+    future := Immutable.Stack.addFirst currentState !future;
+    past := Immutable.Stack.removeFirst !past;
+    lastState
+  | None => currentState
+  }
+};
+
+let goForward currentState =>
+  switch (Immutable.Stack.tryFirst !future) {
+  | Some nextState =>
+    past := Immutable.Stack.addFirst currentState !past;
+    future := Immutable.Stack.removeFirst !future;
+    nextState
+  | None => currentState
+  };
+
+let recordHistory currentState => {
+  past := Immutable.Stack.addFirst currentState !past;
+  future := Immutable.Stack.empty
+};
+
+let timeTravel store next action => {
+  let currentState = Reductive.Store.getState store;
+  switch action {
+  | TravelBackward => next (ReplaceState (goBack currentState))
+  | TravelForward => next (ReplaceState (goForward currentState))
+  | _ =>
+    next action;
+    let newState = Reductive.Store.getState store;
+    if (currentState !== newState) {
+      recordHistory currentState
+    }
+  }
+};
 
 let logger store next action => {
   Js.log "will dispatch";
@@ -32,26 +81,8 @@ let logger store next action => {
   returnValue
 };
 
-let states = ref Immutable.Deque.empty;
-
-let timeTravel store next action => {
-  Js.log "wowowowow";
-  let returnValue = next action;
-  states := Immutable.Deque.addLast (Reductive.Store.getState store) !states;
-  Js.log states;
-  returnValue
-};
-
 let thunkedLogger store next action =>
-  ignore (
-    ReduxThunk.thunk
-      store
-      (
-        fun action =>
-          ignore (logger store (fun action => ignore (timeTravel store next action)) action)
-      )
-      action
-  );
+  ignore (action |> ReduxThunk.thunk store @@ logger store @@ timeTravel store next);
 
 /* let a = Reductive.compose appReducter; */
 let store =
