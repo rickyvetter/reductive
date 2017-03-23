@@ -5,7 +5,7 @@
 {
   "name" : "reductive",
   "reason" : { "react-jsx" : true},
-  "bs-dependencies": ["rehydrate", "reason-js"],
+  "bs-dependencies": ["reason-react", "reason-js"],
   "sources": [
     "src",
     {
