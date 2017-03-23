@@ -22,7 +22,7 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "reason-js": "0.0.16",
-    "rehydrate": "git+https://github.com/reasonml/rehydrate.git"
+    "reason-react": "git+https://github.com/reasonml/reason-react.git"
   },
   "devDependencies": {
     "webpack": "^2.2.1"
