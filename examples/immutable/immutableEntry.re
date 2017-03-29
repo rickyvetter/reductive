@@ -1,8 +1,9 @@
-module Blah =
+module ImmutableStoreProvider =
   Reductive.MakeProvider {
     type state = AppState.appState;
     type action = ReduxThunk.thunk AppState.appState;
   };
 
 ReactDOMRe.renderToElementWithId
-  <Blah store=TimeTravelStore.store component=ImmutableRenderer.createElement /> "index";
+  <ImmutableStoreProvider store=TimeTravelStore.store component=ImmutableRenderer.createElement />
+  "index";

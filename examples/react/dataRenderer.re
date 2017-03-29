@@ -14,7 +14,7 @@ module DataRenderer = {
       ReasonJs.setTimeout
         (
           fun () =>
-            Reductive.Store.dispatch store (ThunkedStore.CounterAction CounterStore.Increment)
+            Reductive.Store.dispatch store (ThunkedStore.CounterAction SimpleStore.Increment)
         )
         1000
     );
@@ -22,19 +22,17 @@ module DataRenderer = {
       (store: Reductive.Store.t (ReduxThunk.thunk ThunkedStore.appState) ThunkedStore.appState) =>
     switch (Reductive.Store.getState store) {
     | {counter} when counter mod 2 === 1 =>
-      Reductive.Store.dispatch store (ThunkedStore.CounterAction CounterStore.Increment)
+      Reductive.Store.dispatch store (ThunkedStore.CounterAction SimpleStore.Increment)
     | _ => ()
     };
   let render {props, updater} =>
     <div onClick=(updater handleClick)>
       <div> (ReactRe.stringToElement ("string: " ^ props.state.notACounter)) </div>
       <div> (ReactRe.stringToElement ("counter: " ^ string_of_int props.state.counter)) </div>
-      <button
-        onClick=(fun _ => props.dispatch (ThunkedStore.CounterAction CounterStore.Increment))>
+      <button onClick=(fun _ => props.dispatch (ThunkedStore.CounterAction SimpleStore.Increment))>
         (ReactRe.stringToElement "Increment")
       </button>
-      <button
-        onClick=(fun _ => props.dispatch (ThunkedStore.CounterAction CounterStore.Decrement))>
+      <button onClick=(fun _ => props.dispatch (ThunkedStore.CounterAction SimpleStore.Decrement))>
         (ReactRe.stringToElement "Decrement")
       </button>
       <button onClick=(fun _ => props.dispatch (ThunkedStore.StringAction ThunkedStore.A))>

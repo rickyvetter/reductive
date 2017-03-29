@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    basic: './lib/js/examples/basic/basicSubscription.js',
-    react: './lib/js/examples/react/component.js',
+    basic: './lib/js/examples/basic/basicEntry.js',
+    react: './lib/js/examples/react/reactEntry.js',
     immutable: './lib/js/examples/immutable/immutableEntry.js',
   },
   output: {

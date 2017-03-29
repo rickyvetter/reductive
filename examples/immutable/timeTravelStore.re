@@ -1,4 +1,4 @@
-open CounterStore;
+open SimpleStore;
 
 type stringAction =
   | A
