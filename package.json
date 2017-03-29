@@ -18,14 +18,14 @@
   "author": "rickyvetter",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "bs-platform": "https://github.com/bloomberg/bucklescript.git",
-    "immutable-re": "git@github.com:facebookincubator/immutable-re.git",
+    "bs-platform": "https://github.com/bloomberg/bucklescript.git"
+  },
+  "devDependencies": {
+    "immutable-re": "https://github.com/facebookincubator/immutable-re.git",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "reason-js": "0.0.16",
-    "reason-react": "git+https://github.com/reasonml/reason-react.git"
-  },
-  "devDependencies": {
+    "reason-react": "https://github.com/reasonml/reason-react.git",
     "webpack": "^2.2.1"
   }
 }

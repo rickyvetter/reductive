@@ -29,33 +29,35 @@ type ReduxThunk.thunk _ +=
   | TravelBackward
   | TravelForward;
 
-let past = ref Immutable.Stack.empty;
+let past = ref (Immutable.Stack.empty ());
 
-let future = ref Immutable.Stack.empty;
+let future = ref (Immutable.Stack.empty ());
 
-let goBack currentState => {
-  Js.log (Immutable.Stack.tryFirst !past);
-  switch (Immutable.Stack.tryFirst !past) {
+let goBack currentState =>
+  switch (Immutable.Stack.first !past) {
   | Some lastState =>
     future := Immutable.Stack.addFirst currentState !future;
-    past := Immutable.Stack.removeFirst !past;
+    if (Immutable.Stack.isNotEmpty !past) {
+      past := Immutable.Stack.removeFirstOrRaise !past
+    };
     lastState
   | None => currentState
-  }
-};
+  };
 
 let goForward currentState =>
-  switch (Immutable.Stack.tryFirst !future) {
+  switch (Immutable.Stack.first !future) {
   | Some nextState =>
     past := Immutable.Stack.addFirst currentState !past;
-    future := Immutable.Stack.removeFirst !future;
+    if (Immutable.Stack.isNotEmpty !future) {
+      future := Immutable.Stack.removeFirstOrRaise !future
+    };
     nextState
   | None => currentState
   };
 
 let recordHistory currentState => {
   past := Immutable.Stack.addFirst currentState !past;
-  future := Immutable.Stack.empty
+  future := Immutable.Stack.empty ()
 };
 
 let timeTravel store next action => {

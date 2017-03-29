@@ -4,6 +4,5 @@ module Blah =
     type action = ReduxThunk.thunk AppState.appState;
   };
 
-ReactDOMRe.render
-  <Blah store=TimeTravelStore.store component=ImmutableRenderer.createElement />
-  (ReasonJs.Document.getElementById "index");
+ReactDOMRe.renderToElementWithId
+  <Blah store=TimeTravelStore.store component=ImmutableRenderer.createElement /> "index";
