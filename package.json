@@ -18,7 +18,7 @@
   "author": "rickyvetter",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "bs-platform": "https://github.com/bloomberg/bucklescript.git"
+    "bs-platform": "^1.6.0"
   },
   "devDependencies": {
     "immutable-re": "https://github.com/facebookincubator/immutable-re.git",
