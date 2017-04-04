@@ -2,14 +2,13 @@
   "name" : "reductive",
   "reason" : {"react-jsx" : true},
   "bs-dependencies": ["reason-react"],
+  "bs-dev-dependencies": ["reason-js", "Immutable.re"],
   "sources": [
     "src",
     {
       "dir": "examples",
-      "bs-dependencies": ["reason-js", "Immutable.re"],
       "subdirs": ["basic", "react", "immutable"],
       "type" : "dev",
-      "group": "examples"
     },
   ],
 }
