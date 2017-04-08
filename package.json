@@ -22,7 +22,7 @@
     "reason-react": "https://github.com/reasonml/reason-react.git"
   },
   "devDependencies": {
-    "immutable-re": "https://github.com/facebookincubator/immutable-re.git",
+    "Immutable.re": "https://github.com/facebookincubator/immutable-re.git",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "reason-js": "0.0.16",
