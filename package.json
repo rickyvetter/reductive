@@ -17,9 +17,6 @@
   ],
   "author": "rickyvetter",
   "license": "BSD-2-Clause",
-  "dependencies": {
-    "reason-react": "https://github.com/reasonml/reason-react.git"
-  },
   "devDependencies": {
     "Immutable.re": "https://github.com/facebookincubator/immutable-re.git",
     "react": "^15.4.2",
@@ -27,6 +24,8 @@
     "reason-js": "0.0.16",
     "webpack": "^2.2.1",
     "bs-platform": "https://github.com/bloomberg/bucklescript.git"
-
+  },
+  "dependencies": {
+    "reason-react": "^0.1.1"
   }
 }
