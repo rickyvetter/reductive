@@ -36,7 +36,7 @@ module MakeProvider:
   };
 
 
-/** These are all visible apis of Redux with explainations about how to achieve the same thing in Reason */
+/** These are all visible APIs of Redux with explanations about how to achieve the same thing in Reason */
 let compose:
   _ => unit
 
