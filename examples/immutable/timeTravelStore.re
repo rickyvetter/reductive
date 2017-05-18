@@ -74,19 +74,15 @@ let timeTravel store next action => {
   }
 };
 
-let logger store next action => {
-  Js.log "will dispatch";
-  Js.log action;
-  let returnValue = next action;
-  Js.log "state after dispatch";
-  Js.log (Reductive.Store.getState store);
-  returnValue
-};
+let thunkedLoggedTimeTravelLogger store next =>
+  Middleware.thunk store @@
+  Middleware.logger store @@
+  timeTravel store @@
+  next;
 
-let thunkedLogger store next action =>
-  ignore (action |> ReduxThunk.thunk store @@ logger store @@ timeTravel store next);
-
-/* let a = Reductive.compose appReducter; */
 let store =
   Reductive.Store.create
-    reducer::appReducter preloadedState::{counter: 0, notACounter: ""} enhancer::thunkedLogger ();
+    reducer::appReducter
+    preloadedState::{counter: 0, notACounter: ""}
+    enhancer::thunkedLoggedTimeTravelLogger
+    ();
