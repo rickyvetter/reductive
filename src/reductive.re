@@ -83,7 +83,10 @@ module MakeProvider (StoreTypes: {type state; type action;}) => {
 };
 
 
-/** These are all visible apis of Redux with explainations about how to achieve the same thing in Reason */
+/** These are all visible apis of Redux that aren't needed in Reason.
+ * When used, build tools will provide explaination of alternatives.
+ * (see .rei for those)
+ */
 let compose _ => ();
 
 let combineReducers _ => ();
