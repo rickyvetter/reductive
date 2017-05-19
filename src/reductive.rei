@@ -8,6 +8,7 @@ module Store: {
     t 'action 'state;
   let unsubscribe: t 'action 'state => (unit => unit) => unit => unit;
   let subscribe: t 'action 'state => (unit => unit) => unit => unit;
+  /* skips all middleware and applies an update directly to the store */
   let nativeDispatch: t 'action 'state => 'action => unit;
   let dispatch: t 'action 'state => 'action => unit;
   let getState: t 'action 'state => 'state;
