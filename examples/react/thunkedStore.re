@@ -23,19 +23,11 @@ let appReducter state action =>
   | _ => state
   };
 
-let logger store next action => {
-  Js.log "will dispatch";
-  Js.log action;
-  let returnValue = next action;
-  Js.log "state after dispatch";
-  Js.log (Reductive.Store.getState store);
-  returnValue
-};
+let thunkedLogger store next =>
+  Middleware.thunk store @@
+  Middleware.logger store @@
+  next;
 
-let thunkedLogger store next action =>
-  ignore (ReduxThunk.thunk store (fun action => ignore (logger store next action)) action);
-
-/* let a = Reductive.compose appReducter; */
 let store =
   Reductive.Store.create
     reducer::appReducter preloadedState::{counter: 0, notACounter: ""} enhancer::thunkedLogger ();

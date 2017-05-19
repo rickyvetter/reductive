@@ -8,6 +8,7 @@ module Store: {
     t 'action 'state;
   let unsubscribe: t 'action 'state => (unit => unit) => unit => unit;
   let subscribe: t 'action 'state => (unit => unit) => unit => unit;
+  /* skips all middleware and applies an update directly to the store */
   let nativeDispatch: t 'action 'state => 'action => unit;
   let dispatch: t 'action 'state => 'action => unit;
   let getState: t 'action 'state => 'state;
@@ -36,7 +37,9 @@ module MakeProvider:
   };
 
 
-/** These are all visible APIs of Redux with explanations about how to achieve the same thing in Reason */
+/** These are all visible apis of Redux that aren't needed in Reason.
+ * When used, build tools will provide explaination of alternatives.
+ */
 let compose:
   _ => unit
 
@@ -59,7 +62,7 @@ let combineReducers:
     [@@ocaml.deprecated
       {|
 combineReducers uses some introspection to determine
-the shape of your state. Instead, consider a pattern like:
+the shape of your state. Instead, consider a declarative pattern like:
 
 type counterAction =
 | Increment
@@ -87,10 +90,18 @@ let applyMiddleware:
 
     [@@ocaml.deprecated
       {|
-The enhancer attribute in Redux essentially allows you
+The enhancer attribute in Redux allows you
 to provide a custom dispatch method (to perform more
 actions before or after the dispatch function). You can simply pass in
 a function directly which handles the exact actions you're looking for.
+
+To chain middlewares you can do something like:
+
+let thunkedLoggedTimeTravelLogger store next =>
+  Middleware.thunk store @@
+  Middleware.logger store @@
+  Middleware.timeTravel store @@
+  next;
 |}
     ];
 

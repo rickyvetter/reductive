@@ -2,10 +2,6 @@ module ImmutableRenderer = {
   include ReactRe.Component;
   type props = {state: AppState.appState, dispatch: ReduxThunk.thunk AppState.appState => unit};
   let name = "ImmutableRenderer";
-  let handleClick _ _ => {
-    Js.log "clicked!";
-    None
-  };
   let incrementAsync store =>
     ignore (
       ReasonJs.setTimeout
@@ -22,8 +18,8 @@ module ImmutableRenderer = {
       Reductive.Store.dispatch store (TimeTravelStore.CounterAction SimpleStore.Increment)
     | _ => ()
     };
-  let render {props, updater} =>
-    <div onClick=(updater handleClick)>
+  let render {props} =>
+    <div>
       <div> (ReactRe.stringToElement ("string: " ^ props.state.notACounter)) </div>
       <div> (ReactRe.stringToElement ("counter: " ^ string_of_int props.state.counter)) </div>
       <button
