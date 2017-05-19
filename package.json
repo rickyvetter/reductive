@@ -18,12 +18,12 @@
   "author": "rickyvetter",
   "license": "BSD-2-Clause",
   "devDependencies": {
-    "Immutable.re": "https://github.com/facebookincubator/immutable-re.git",
+    "bs-platform": "^1.7.3",
+    "immutable-re": "https://github.com/facebookincubator/immutable-re.git",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "reason-js": "0.0.16",
-    "webpack": "^2.2.1",
-    "bs-platform": "https://github.com/bloomberg/bucklescript.git"
+    "webpack": "^2.2.1"
   },
   "dependencies": {
     "reason-react": "^0.1.1"
