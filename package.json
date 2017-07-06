@@ -18,7 +18,7 @@
   "author": "rickyvetter",
   "license": "BSD-2-Clause",
   "devDependencies": {
-    "bs-platform": "^1.7.3",
+    "bs-platform": "^1.8.0",
     "immutable-re": "https://github.com/facebookincubator/immutable-re.git",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
@@ -26,6 +26,6 @@
     "webpack": "^2.2.1"
   },
   "dependencies": {
-    "reason-react": "^0.1.1"
+    "reason-react": "^0.2.1"
   }
 }

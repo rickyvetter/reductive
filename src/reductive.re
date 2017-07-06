@@ -39,47 +39,48 @@ module Store = {
   let replaceReducer store reducer => store.reducer = reducer;
 };
 
-module MakeProvider (StoreTypes: {type state; type action;}) => {
-  module Provider = {
-    include ReactRe.Component.Stateful.InstanceVars;
-    type props = {
-      store: Store.t StoreTypes.action StoreTypes.state,
-      component:
-        state::StoreTypes.state =>
-        dispatch::(StoreTypes.action => unit) =>
-        children::list ReactRe.reactElement =>
-        ref::(ReactRe.reactRef => unit)? =>
-        key::string? =>
-        unit =>
-        ReactRe.reactElement
-    };
-    type state = option StoreTypes.state;
-    type instanceVars = {mutable unsubscribe: option (unit => unit)};
-    let name = "Provider";
-    let getInstanceVars _ => {unsubscribe: None};
-    let getInitialState _ => None;
-    let update {props} () => Some (Some (Store.getState props.store));
-    let componentDidMount {props, instanceVars, updater} => {
-      instanceVars.unsubscribe = Some (Store.subscribe props.store (updater update));
-      Some (Some (Store.getState props.store))
-    };
-    let componentWillUnmount {instanceVars} =>
-      switch instanceVars.unsubscribe {
-      | Some unsubscribe => unsubscribe ()
-      | None => ()
-      };
-    let dispatch {props} action => {
-      Store.dispatch props.store action;
-      None
-    };
-    let render {props, state, updater} =>
-      switch state {
-      | None => ReactRe.nullElement
-      | Some state => props.component ::state dispatch::(updater dispatch) children::[] ()
-      };
+module Provider = {
+  type state 'reductiveState = {
+    reductiveState: option 'reductiveState,
+    unsubscribe: option (unit => unit)
   };
-  include ReactRe.CreateComponent Provider;
-  let createElement ::store ::component => wrapProps {store, component};
+  let createMake (store: Store.t 'action 'state) => {
+    let innerComponent = ReasonReact.statefulComponent "Provider";
+    let make
+        component::(
+          component:
+            state::'state =>
+            dispatch::('action => unit) =>
+            array ReasonReact.reactElement =>
+            ReasonReact.component 'a 'b
+        )
+        (_children: array ReasonReact.reactElement)
+        :ReasonReact.component (state 'state) unit => {
+      let updater _ {ReasonReact.state: state} =>
+        ReasonReact.Update {...state, reductiveState: Some (Store.getState store)};
+      {
+        ...innerComponent,
+        initialState: fun () => {reductiveState: None, unsubscribe: None},
+        didMount: fun {update} =>
+          ReasonReact.Update {
+            unsubscribe: Some (Store.subscribe store (update updater)),
+            reductiveState: Some (Store.getState store)
+          },
+        willUnmount: fun {state} =>
+          switch state.unsubscribe {
+          | Some unsubscribe => unsubscribe ()
+          | None => ()
+          },
+        render: fun {state} =>
+          switch state.reductiveState {
+          | None => ReasonReact.nullElement
+          | Some state =>
+            ReasonReact.element (component ::state dispatch::(Store.dispatch store) [||])
+          }
+      }
+    };
+    make
+  };
 };
 
 

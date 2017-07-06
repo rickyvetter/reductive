@@ -1,8 +1,5 @@
-module ThunkedStoreProvider =
-  Reductive.MakeProvider {
-    type state = ThunkedStore.appState;
-    type action = ReduxThunk.thunk ThunkedStore.appState;
-  };
+module ThunkedStoreProvider = {
+  let make = Reductive.Provider.createMake ThunkedStore.store;
+};
 
-ReactDOMRe.renderToElementWithId
-  <ThunkedStoreProvider store=ThunkedStore.store component=DataRenderer.createElement /> "index";
+ReactDOMRe.renderToElementWithId <ThunkedStoreProvider component=DataRenderer.make /> "index";

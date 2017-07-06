@@ -1,6 +1,6 @@
 {
   "name" : "reductive",
-  "reason" : {"react-jsx" : true},
+  "reason" : {"react-jsx" : 2},
   "bs-dependencies": ["reason-react"],
   "bs-dev-dependencies": ["reason-js", "immutable-re"],
   "sources": [

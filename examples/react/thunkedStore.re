@@ -16,7 +16,7 @@ type ReduxThunk.thunk _ +=
 
 type appState = {counter: int, notACounter: string};
 
-let appReducter state action =>
+let appReducer state action =>
   switch action {
   | StringAction action => {...state, notACounter: stringReduce state.notACounter action}
   | CounterAction action => {...state, counter: counter state.counter action}
@@ -30,4 +30,4 @@ let thunkedLogger store next =>
 
 let store =
   Reductive.Store.create
-    reducer::appReducter preloadedState::{counter: 0, notACounter: ""} enhancer::thunkedLogger ();
+    reducer::appReducer preloadedState::{counter: 0, notACounter: ""} enhancer::thunkedLogger ();
