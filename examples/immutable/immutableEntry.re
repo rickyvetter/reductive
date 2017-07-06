@@ -1,9 +1,6 @@
-module ImmutableStoreProvider =
-  Reductive.MakeProvider {
-    type state = AppState.appState;
-    type action = ReduxThunk.thunk AppState.appState;
-  };
+module ImmutableStoreProvider = {
+  let make = Reductive.Provider.createMake TimeTravelStore.store;
+};
 
 ReactDOMRe.renderToElementWithId
-  <ImmutableStoreProvider store=TimeTravelStore.store component=ImmutableRenderer.createElement />
-  "index";
+  <ImmutableStoreProvider component=ImmutableRenderer.make /> "index";

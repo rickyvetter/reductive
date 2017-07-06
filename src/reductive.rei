@@ -15,26 +15,19 @@ module Store: {
   let replaceReducer: t 'action 'state => ('state => 'action => 'state) => unit;
 };
 
-module MakeProvider:
-  (StoreTypes: {type state; type action;}) =>
-  {
-    let createElement:
-      store::Store.t StoreTypes.action StoreTypes.state =>
-      component::(
-        state::StoreTypes.state =>
-        dispatch::(StoreTypes.action => unit) =>
-        children::list ReactRe.reactElement =>
-        ref::(ReactRe.reactRef => unit)? =>
-        key::string? =>
-        unit =>
-        ReactRe.reactElement
-      ) =>
-      children::list ReactRe.reactElement =>
-      ref::(ReactRe.reactRef => unit)? =>
-      key::string? =>
-      unit =>
-      ReactRe.reactElement;
-  };
+module Provider: {
+  type state 'reductiveState;
+  let createMake:
+    Store.t 'action 'state =>
+    component::(
+      state::'state =>
+      dispatch::('action => unit) =>
+      array ReasonReact.reactElement =>
+      ReasonReact.component 'a 'b
+    ) =>
+    array ReasonReact.reactElement =>
+    ReasonReact.component (state 'state) unit;
+};
 
 
 /** These are all visible apis of Redux that aren't needed in Reason.
