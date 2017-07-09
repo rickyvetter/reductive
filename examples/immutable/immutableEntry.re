@@ -1,5 +1,5 @@
 module ImmutableStoreProvider = {
-  let make = Reductive.Provider.createMake TimeTravelStore.store;
+  let make = Reductive.Provider.createMake name::"ImmutableStoreProvider" TimeTravelStore.store;
 };
 
 ReactDOMRe.renderToElementWithId
