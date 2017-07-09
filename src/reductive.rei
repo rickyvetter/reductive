@@ -26,7 +26,7 @@ module Provider: {
       ReasonReact.component 'a 'b
     ) =>
     array ReasonReact.reactElement =>
-    ReasonReact.component (state 'state) unit;
+    ReasonReact.component (state 'state) ReasonReact.noRetainedProps;
 };
 
 
