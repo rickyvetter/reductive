@@ -44,8 +44,8 @@ module Provider = {
     reductiveState: option 'reductiveState,
     unsubscribe: option (unit => unit)
   };
-  let createMake (store: Store.t 'action 'state) => {
-    let innerComponent = ReasonReact.statefulComponent "Provider";
+  let createMake ::name="Provider" (store: Store.t 'action 'state) => {
+    let innerComponent = ReasonReact.statefulComponent name;
     let make
         component::(
           component:

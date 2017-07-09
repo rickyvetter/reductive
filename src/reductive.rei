@@ -18,6 +18,7 @@ module Store: {
 module Provider: {
   type state 'reductiveState;
   let createMake:
+    name::string? =>
     Store.t 'action 'state =>
     component::(
       state::'state =>
