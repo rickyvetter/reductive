@@ -55,7 +55,7 @@ module Provider = {
             ReasonReact.component 'a 'b
         )
         (_children: array ReasonReact.reactElement)
-        :ReasonReact.component (state 'state) unit => {
+        :ReasonReact.component (state 'state) ReasonReact.noRetainedProps => {
       let updater _ {ReasonReact.state: state} =>
         ReasonReact.Update {...state, reductiveState: Some (Store.getState store)};
       {
