@@ -11,7 +11,7 @@ However, in the spirit of unifying the Reason community around an authoritative 
 ## Comparisons with Redux
 
 ### Actions
-Redux [actions](http://redux.js.org/docs/basics/Actions.html) are implemented as plain JS objects. JS objects can be a bit too flexible, and many Redux users rely on standardized shapes for their actions to make sure that middlewares and third party libraries work with them. Reason has language-level support for composing a set of data types which many functions can operate over. They are called [variants](http://facebook.github.io/reason/#syntax-basics-variants) and you can see how they are used [here](https://github.com/reasonml/reductive/blob/master/examples/basic/simpleStore.re).
+Redux [actions](http://redux.js.org/docs/basics/Actions.html) are implemented as plain JS objects. JS objects can be a bit too flexible, and many Redux users rely on standardized shapes for their actions to make sure that middlewares and third party libraries work with them. Reason has language-level support for composing a set of data types which many functions can operate over. They are called [variants](https://reasonml.github.io/guide/language/data-types#variants) and you can see how they are used [here](https://github.com/reasonml/reductive/blob/master/examples/basic/simpleStore.re).
 
 ### Action Creators
 Redux [action creators](http://redux.js.org/docs/basics/Actions.html#action-creators) are used as composable ways of generating plain JS objects that match the schema of a specific action. In Reason, the type system does a lot of this work for you, so you can reliably put action types directly in your code and know that things will Just Work™. This has an added performance advantage of shifting that function call to compile time.
