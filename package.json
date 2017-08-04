@@ -16,7 +16,7 @@
     "redux"
   ],
   "author": "rickyvetter",
-  "license": "BSD-2-Clause",
+  "license": "MIT",
   "devDependencies": {
     "bs-platform": "^1.8.0",
     "immutable-re": "https://github.com/facebookincubator/immutable-re.git",
