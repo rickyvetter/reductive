@@ -18,7 +18,7 @@
   "author": "rickyvetter",
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "^1.8.0",
+    "bs-platform": "^1.8.2",
     "immutable-re": "https://github.com/facebookincubator/immutable-re.git",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
