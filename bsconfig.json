@@ -1,6 +1,7 @@
 {
-  "name" : "reductive",
-  "reason" : {"react-jsx" : 2},
+  "name": "reductive",
+  "bsc-flags": ["-bs-super-errors"],
+  "reason": {"react-jsx" : 2},
   "bs-dependencies": ["reason-react"],
   "bs-dev-dependencies": ["reason-js", "immutable-re"],
   "sources": [

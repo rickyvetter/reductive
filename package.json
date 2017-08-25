@@ -4,10 +4,10 @@
   "description": "Redux in Reason",
   "main": "index.js",
   "scripts": {
-    "test": "exit 0",
+    "build": "bsb -make-world",
     "start": "bsb -make-world -w",
-    "build": "webpack -w",
-    "clean": "bsb -clean-world"
+    "clean": "bsb -clean-world",
+    "test": "bsb -make-world"
   },
   "keywords": [
     "reason",
@@ -18,7 +18,7 @@
   "author": "rickyvetter",
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "^1.8.2",
+    "bs-platform": "^1.9.0",
     "immutable-re": "https://github.com/facebookincubator/immutable-re.git",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
