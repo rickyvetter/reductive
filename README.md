@@ -4,7 +4,7 @@ A reimplementation of [redux](https://github.com/reactjs/redux) in [Reason](http
 
 ## Word of Caution
 
-**[You might not need this library](https://medium.com/@dan_abramov/you-might-not-need-redux-be46360cf367)**, especially so in a language which provides good enough construction blocks out of the box.
+**[You might not need this library](https://medium.com/@dan_abramov/you-might-not-need-redux-be46360cf367)**, especially so in a language which provides good enough construction blocks out of the box. **ReasonReact [already comes with reducers](https://reasonml.github.io/reason-react/blog.html#reducers-are-here)**!
 
 However, in the spirit of unifying the Reason community around an authoritative Redux implementation and to avoid churn, we'll polish Reductive to make it production-ready for those who do wish to use it anyway.
 
