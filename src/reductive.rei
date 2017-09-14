@@ -24,10 +24,10 @@ module Provider: {
       state::'state =>
       dispatch::('action => unit) =>
       array ReasonReact.reactElement =>
-      ReasonReact.component 'a 'b
+      ReasonReact.component 'a 'b 'c
     ) =>
     array ReasonReact.reactElement =>
-    ReasonReact.component (state 'state) ReasonReact.noRetainedProps;
+    ReasonReact.component (state 'state) ReasonReact.noRetainedProps ReasonReact.actionless;
 };
 
 

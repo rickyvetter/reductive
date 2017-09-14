@@ -45,17 +45,17 @@ module Provider = {
     unsubscribe: option (unit => unit)
   };
   let createMake ::name="Provider" (store: Store.t 'action 'state) => {
-    let innerComponent = ReasonReact.statefulComponent name;
+    let innerComponent = ReasonReact.reducerComponent name;
     let make
         component::(
           component:
             state::'state =>
             dispatch::('action => unit) =>
             array ReasonReact.reactElement =>
-            ReasonReact.component 'a 'b
+            ReasonReact.component 'a 'b 'c
         )
         (_children: array ReasonReact.reactElement)
-        :ReasonReact.component (state 'state) ReasonReact.noRetainedProps => {
+        :ReasonReact.component (state 'state) ReasonReact.noRetainedProps ReasonReact.actionless => {
       let updater _ {ReasonReact.state: state} =>
         ReasonReact.Update {...state, reductiveState: Some (Store.getState store)};
       {
