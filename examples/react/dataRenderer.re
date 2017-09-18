@@ -10,7 +10,7 @@ let make state::(state: ThunkedStore.appState) ::dispatch _children => {
     };
   let incrementAsync store =>
     ignore (
-      ReasonJs.setTimeout
+      Js.Global.setTimeout
         (
           fun () =>
             Reductive.Store.dispatch store (ThunkedStore.CounterAction SimpleStore.Increment)
