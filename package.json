@@ -1,6 +1,6 @@
 {
   "name": "reductive",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Redux in Reason",
   "main": "index.js",
   "scripts": {
