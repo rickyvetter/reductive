@@ -1,44 +1,43 @@
 module Store: {
-  type t 'action 'state;
+  type t('action, 'state);
   let create:
-    reducer::('state => 'action => 'state) =>
-    preloadedState::'state =>
-    enhancer::(t 'action 'state => ('action => unit) => 'action => unit)? =>
-    unit =>
-    t 'action 'state;
-  let unsubscribe: t 'action 'state => (unit => unit) => unit => unit;
-  let subscribe: t 'action 'state => (unit => unit) => unit => unit;
+    (
+      ~reducer: ('state, 'action) => 'state,
+      ~preloadedState: 'state,
+      ~enhancer: (t('action, 'state), 'action => unit, 'action) => unit=?,
+      unit
+    ) =>
+    t('action, 'state);
+  let unsubscribe: (t('action, 'state), unit => unit, unit) => unit;
+  let subscribe: (t('action, 'state), unit => unit, unit) => unit;
   /* skips all middleware and applies an update directly to the store */
-  let nativeDispatch: t 'action 'state => 'action => unit;
-  let dispatch: t 'action 'state => 'action => unit;
-  let getState: t 'action 'state => 'state;
-  let replaceReducer: t 'action 'state => ('state => 'action => 'state) => unit;
+  let nativeDispatch: (t('action, 'state), 'action) => unit;
+  let dispatch: (t('action, 'state), 'action) => unit;
+  let getState: t('action, 'state) => 'state;
+  let replaceReducer: (t('action, 'state), ('state, 'action) => 'state) => unit;
 };
 
 module Provider: {
-  type state 'reductiveState;
+  type state('reductiveState);
+  type action =
+    | UpdateState;
   let createMake:
-    name::string? =>
-    Store.t 'action 'state =>
-    component::(
-      state::'state =>
-      dispatch::('action => unit) =>
-      array ReasonReact.reactElement =>
-      ReasonReact.component 'a 'b 'c
+    (
+      ~name: string=?,
+      Store.t('action, 'state),
+      ~component: (~state: 'state, ~dispatch: 'action => unit, array(ReasonReact.reactElement)) =>
+                  ReasonReact.component('a, 'b, 'c),
+      array(ReasonReact.reactElement)
     ) =>
-    array ReasonReact.reactElement =>
-    ReasonReact.component (state 'state) ReasonReact.noRetainedProps ReasonReact.actionless;
+    ReasonReact.component(state('state), ReasonReact.noRetainedProps, action);
 };
 
 
-/** These are all visible apis of Redux that aren't needed in Reason.
+/*** These are all visible apis of Redux that aren't needed in Reason.
  * When used, build tools will provide explaination of alternatives.
  */
-let compose:
-  _ => unit
-
-    [@@ocaml.deprecated
-      {|
+[@ocaml.deprecated
+  {|
 Use the |> as an infix operator to chain the
 result of one function into another:
 
@@ -47,14 +46,11 @@ in JS goes to
 `x |> h |> g |> f`
 in Reason.
 |}
-    ];
+]
+let compose: _ => unit;
 
-
-let combineReducers:
-  _ => unit
-
-    [@@ocaml.deprecated
-      {|
+[@ocaml.deprecated
+  {|
 combineReducers uses some introspection to determine
 the shape of your state. Instead, consider a declarative pattern like:
 
@@ -76,14 +72,11 @@ let combinedReducer state action => {
 
 this pattern gives you full control over the shape of your state.
 |}
-    ];
+]
+let combineReducers: _ => unit;
 
-
-let applyMiddleware:
-  _ => unit
-
-    [@@ocaml.deprecated
-      {|
+[@ocaml.deprecated
+  {|
 The enhancer attribute in Redux allows you
 to provide a custom dispatch method (to perform more
 actions before or after the dispatch function). You can simply pass in
@@ -97,14 +90,11 @@ let thunkedLoggedTimeTravelLogger store next =>
   Middleware.timeTravel store @@
   next;
 |}
-    ];
+]
+let applyMiddleware: _ => unit;
 
-
-let bindActionCreators:
-  list 'a => ('a => 'b) => list (unit => 'b)
-
-    [@@ocaml.deprecated
-      {|
+[@ocaml.deprecated
+  {|
 bindActionCreators is not as useful in Reason,
 since action creators are types, not functions.
 The code is implemented as:
@@ -114,4 +104,5 @@ List.map (fun action () => dispatch action) actions;
 
 Instead - you are free to build the action data type at dispatch time.
 |}
-    ];
+]
+let bindActionCreators: (list('a), 'a => 'b) => list((unit => 'b));
