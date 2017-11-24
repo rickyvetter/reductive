@@ -1,5 +1,6 @@
 {
   "name": "reductive",
+  "refmt": 3,
   "bsc-flags": ["-bs-super-errors"],
   "reason": {"react-jsx" : 2},
   "bs-dependencies": ["reason-react"],
@@ -9,7 +10,7 @@
     {
       "dir": "examples",
       "subdirs": ["basic", "react", "immutable"],
-      "type" : "dev",
-    },
-  ],
+      "type" : "dev"
+    }
+  ]
 }

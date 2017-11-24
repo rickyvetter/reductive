@@ -4,30 +4,34 @@ type stringAction =
   | A
   | B;
 
-let stringReduce state action =>
+let stringReduce = (state, action) =>
   switch action {
-  | A => state ^ "a"
-  | B => state ^ "b"
+  | A => state ++ "a"
+  | B => state ++ "b"
   };
 
-type ReduxThunk.thunk _ +=
-  | StringAction stringAction
-  | CounterAction action;
+type ReduxThunk.thunk(_) +=
+  | StringAction (stringAction)
+  | CounterAction (action);
 
-type appState = {counter: int, notACounter: string};
+type appState = {
+  counter: int,
+  notACounter: string
+};
 
-let appReducer state action =>
+let appReducer = (state, action) =>
   switch action {
-  | StringAction action => {...state, notACounter: stringReduce state.notACounter action}
-  | CounterAction action => {...state, counter: counter state.counter action}
+  | StringAction(action) => {...state, notACounter: stringReduce(state.notACounter, action)}
+  | CounterAction(action) => {...state, counter: counter(state.counter, action)}
   | _ => state
   };
 
-let thunkedLogger store next =>
-  Middleware.thunk store @@
-  Middleware.logger store @@
-  next;
+let thunkedLogger = (store, next) => Middleware.thunk(store) @@ Middleware.logger(store) @@ next;
 
 let store =
-  Reductive.Store.create
-    reducer::appReducer preloadedState::{counter: 0, notACounter: ""} enhancer::thunkedLogger ();
+  Reductive.Store.create(
+    ~reducer=appReducer,
+    ~preloadedState={counter: 0, notACounter: ""},
+    ~enhancer=thunkedLogger,
+    ()
+  );

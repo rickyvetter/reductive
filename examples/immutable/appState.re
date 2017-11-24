@@ -1,1 +1,4 @@
-type appState = {counter: int, notACounter: string};
+type appState = {
+  counter: int,
+  notACounter: string
+};

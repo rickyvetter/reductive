@@ -18,13 +18,13 @@
   "author": "rickyvetter",
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "^1.9.1",
+    "bs-platform": "^2.1.0",
     "immutable-re": "https://github.com/facebookincubator/immutable-re.git",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "webpack": "^2.2.1"
   },
   "dependencies": {
-    "reason-react": "^0.2.4"
+    "reason-react": "^0.3.0"
   }
 }
