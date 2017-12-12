@@ -57,7 +57,7 @@ module Provider = {
         )
         : ReasonReact.component(state('state), ReasonReact.noRetainedProps, action) => {
       ...innerComponent,
-      initialState: () => {reductiveState: None, unsubscribe: None},
+      initialState: () => {reductiveState: Some(Store.getState(store)), unsubscribe: None},
       reducer: (action, state) =>
         switch action {
         | UpdateState =>
