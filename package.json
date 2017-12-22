@@ -9,11 +9,18 @@
     "clean": "bsb -clean-world",
     "test": "bsb -make-world"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reasonml-community/reductive.git"
+  },
+  "homepage": "https://github.com/reasonml-community/reductive#readme",
+  "bugs": "https://github.com/reasonml-community/reductive/issues",
   "keywords": [
     "reason",
     "reasonml",
     "ocaml",
-    "redux"
+    "redux",
+    "state management"
   ],
   "author": "rickyvetter",
   "license": "MIT",
