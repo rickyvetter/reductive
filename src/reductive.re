@@ -86,7 +86,7 @@ module Provider = {
 
 
 /*** These are all visible apis of Redux that aren't needed in Reason.
- * When used, build tools will provide explaination of alternatives.
+ * When used, build tools will provide explanation of alternatives.
  * (see .rei for those)
  */
 let compose = (_) => ();
