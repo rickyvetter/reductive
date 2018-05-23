@@ -47,7 +47,8 @@ module Provider = {
     unsubscribe: option(unit => unit)
   };
   type action =
-    | UpdateState;
+  | UpdateState
+  | AddListener(action => unit);
   let createMake = (~name="Provider", store: Store.t('action, 'state)) => {
     let innerComponent = ReasonReact.reducerComponent(name);
     let make =
@@ -72,18 +73,19 @@ module Provider = {
         unsubscribe: None
       },
       reducer: (action, state) =>
-        switch (action) {
-        | UpdateState =>
-          ReasonReact.Update({
-            ...state,
-            reductiveState: Some(Store.getState(store))
-          })
+          switch (action) {
+          | AddListener(send) =>
+            ReasonReact.Update({
+              unsubscribe: Some(Store.subscribe(store, (_) => send(UpdateState))),
+              reductiveState: Some(Store.getState(store))
+           })
+          | UpdateState =>
+            ReasonReact.Update({
+              ...state,
+              reductiveState: Some(Store.getState(store))
+           })
         },
-      didMount: ({send}) =>
-        ReasonReact.Update({
-          unsubscribe: Some(Store.subscribe(store, (_) => send(UpdateState))),
-          reductiveState: Some(Store.getState(store))
-        }),
+      didMount: ({send}) => send(AddListener(send)),
       willUnmount: ({state}) =>
         switch (state.unsubscribe) {
         | Some(unsubscribe) => unsubscribe()
@@ -91,7 +93,7 @@ module Provider = {
         },
       render: ({state}) =>
         switch (state.reductiveState) {
-        | None => ReasonReact.nullElement
+        | None => ReasonReact.null
         | Some(state) =>
           ReasonReact.element(
             component(~state, ~dispatch=Store.dispatch(store), [||])
