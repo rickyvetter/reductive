@@ -20,7 +20,8 @@ module Store: {
 module Provider: {
   type state('reductiveState);
   type action =
-    | UpdateState;
+    | UpdateState
+    | AddListener(action => unit);
   let createMake:
     (
       ~name: string=?,
