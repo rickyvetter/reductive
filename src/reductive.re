@@ -41,6 +41,12 @@ module Store = {
   let replaceReducer = (store, reducer) => store.reducer = reducer;
 };
 
+module Lens = {
+  type t('a, 'b) = 'a => 'b;
+  let make = getter => getter;
+  let view = (l, a) => l(a);
+};
+
 module Provider = {
   type state('reductiveState) = {
     reductiveState: option('reductiveState),
@@ -49,13 +55,13 @@ module Provider = {
   type action =
   | UpdateState
   | AddListener(action => unit);
-  let createMake = (~name="Provider", store: Store.t('action, 'state)) => {
+  let createMake = (~name="Provider", store: Store.t('action, 'state), lens: Lens.t('state, 'lensed)) => {
     let innerComponent = ReasonReact.reducerComponent(name);
     let make =
         (
           ~component:
              (
-               ~state: 'state,
+               ~state: 'lensed,
                ~dispatch: 'action => unit,
                array(ReasonReact.reactElement)
              ) =>
@@ -63,13 +69,13 @@ module Provider = {
           _children: array(ReasonReact.reactElement)
         )
         : ReasonReact.component(
-            state('state),
+            state('lensed),
             ReasonReact.noRetainedProps,
             action
           ) => {
       ...innerComponent,
       initialState: () => {
-        reductiveState: Some(Store.getState(store)),
+        reductiveState: Some(Lens.view(lens, Store.getState(store))),
         unsubscribe: None
       },
       reducer: (action, state) =>
@@ -77,12 +83,12 @@ module Provider = {
           | AddListener(send) =>
             ReasonReact.Update({
               unsubscribe: Some(Store.subscribe(store, (_) => send(UpdateState))),
-              reductiveState: Some(Store.getState(store))
+              reductiveState: Some(Lens.view(lens, Store.getState(store)))
            })
           | UpdateState =>
             ReasonReact.Update({
               ...state,
-              reductiveState: Some(Store.getState(store))
+              reductiveState: Some(Lens.view(lens, Store.getState(store)))
            })
         },
       didMount: ({send}) => send(AddListener(send)),
@@ -91,6 +97,9 @@ module Provider = {
         | Some(unsubscribe) => unsubscribe()
         | None => ()
         },
+      shouldUpdate: ({oldSelf, newSelf}) => {
+        oldSelf.state != newSelf.state
+      },
       render: ({state}) =>
         switch (state.reductiveState) {
         | None => ReasonReact.null

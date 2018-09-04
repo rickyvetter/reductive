@@ -17,6 +17,12 @@ module Store: {
   let replaceReducer: (t('action, 'state), ('state, 'action) => 'state) => unit;
 };
 
+module Lens: {
+  type t('a, 'b);
+  let make: ('a => 'b) => t('a, 'b);
+  let view: (t('a, 'b), 'a) => 'b;
+};
+
 module Provider: {
   type state('reductiveState);
   type action =
@@ -26,11 +32,12 @@ module Provider: {
     (
       ~name: string=?,
       Store.t('action, 'state),
-      ~component: (~state: 'state, ~dispatch: 'action => unit, array(ReasonReact.reactElement)) =>
+      Lens.t('state, 'lensed),
+      ~component: (~state: 'lensed, ~dispatch: 'action => unit, array(ReasonReact.reactElement)) =>
                   ReasonReact.component('a, 'b, 'c),
       array(ReasonReact.reactElement)
     ) =>
-    ReasonReact.component(state('state), ReasonReact.noRetainedProps, action);
+    ReasonReact.component(state('lensed), ReasonReact.noRetainedProps, action);
 };
 
 
