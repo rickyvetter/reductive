@@ -4,7 +4,7 @@ module Store = {
     mutable reducer: ('state, 'action) => 'state,
     mutable listeners: list(unit => unit),
     customDispatcher:
-      option((t('action, 'state), 'action => unit, 'action) => unit)
+      option((t('action, 'state), 'action => unit, 'action) => unit),
   };
   let create = (~reducer, ~preloadedState, ~enhancer=?, ()) =>
     switch (preloadedState, enhancer, reducer) {
@@ -12,13 +12,13 @@ module Store = {
         state: preloadedState,
         listeners: [],
         reducer,
-        customDispatcher: None
+        customDispatcher: None,
       }
     | (preloadedState, Some(enhancer), reducer) => {
         state: preloadedState,
         listeners: [],
         reducer,
-        customDispatcher: Some(enhancer)
+        customDispatcher: Some(enhancer),
       }
     };
   let unsubscribe = (store, listener, ()) =>
@@ -50,12 +50,17 @@ module Lens = {
 module Provider = {
   type state('reductiveState) = {
     reductiveState: option('reductiveState),
-    unsubscribe: option(unit => unit)
+    unsubscribe: option(unit => unit),
   };
   type action =
-  | UpdateState
-  | AddListener(action => unit);
-  let createMake = (~name="Provider", store: Store.t('action, 'state), lens: Lens.t('state, 'lensed)) => {
+    | UpdateState
+    | AddListener(action => unit);
+  let createMake =
+      (
+        ~name="Provider",
+        store: Store.t('action, 'state),
+        lens: Lens.t('state, 'lensed),
+      ) => {
     let innerComponent = ReasonReact.reducerComponent(name);
     let make =
         (
@@ -66,30 +71,31 @@ module Provider = {
                array(ReasonReact.reactElement)
              ) =>
              ReasonReact.component('a, 'b, 'c),
-          _children: array(ReasonReact.reactElement)
+          _children: array(ReasonReact.reactElement),
         )
         : ReasonReact.component(
             state('lensed),
             ReasonReact.noRetainedProps,
-            action
+            action,
           ) => {
       ...innerComponent,
       initialState: () => {
         reductiveState: Some(Lens.view(lens, Store.getState(store))),
-        unsubscribe: None
+        unsubscribe: None,
       },
       reducer: (action, state) =>
-          switch (action) {
-          | AddListener(send) =>
-            ReasonReact.Update({
-              unsubscribe: Some(Store.subscribe(store, (_) => send(UpdateState))),
-              reductiveState: Some(Lens.view(lens, Store.getState(store)))
-           })
-          | UpdateState =>
-            ReasonReact.Update({
-              ...state,
-              reductiveState: Some(Lens.view(lens, Store.getState(store)))
-           })
+        switch (action) {
+        | AddListener(send) =>
+          ReasonReact.Update({
+            unsubscribe:
+              Some(Store.subscribe(store, _ => send(UpdateState))),
+            reductiveState: Some(Lens.view(lens, Store.getState(store))),
+          })
+        | UpdateState =>
+          ReasonReact.Update({
+            ...state,
+            reductiveState: Some(Lens.view(lens, Store.getState(store))),
+          })
         },
       didMount: ({send}) => send(AddListener(send)),
       willUnmount: ({state}) =>
@@ -97,32 +103,29 @@ module Provider = {
         | Some(unsubscribe) => unsubscribe()
         | None => ()
         },
-      shouldUpdate: ({oldSelf, newSelf}) => {
-        oldSelf.state != newSelf.state
-      },
+      shouldUpdate: ({oldSelf, newSelf}) => oldSelf.state != newSelf.state,
       render: ({state}) =>
         switch (state.reductiveState) {
         | None => ReasonReact.null
         | Some(state) =>
           ReasonReact.element(
-            component(~state, ~dispatch=Store.dispatch(store), [||])
+            component(~state, ~dispatch=Store.dispatch(store), [||]),
           )
-        }
+        },
     };
     make;
   };
 };
 
-
 /*** These are all visible apis of Redux that aren't needed in Reason.
  * When used, build tools will provide explanation of alternatives.
  * (see .rei for those)
  */
-let compose = (_) => ();
+let compose = _ => ();
 
-let combineReducers = (_) => ();
+let combineReducers = _ => ();
 
-let applyMiddleware = (_) => ();
+let applyMiddleware = _ => ();
 
 let bindActionCreators = (actions, dispatch) =>
   List.map((action, ()) => dispatch(action), actions);
