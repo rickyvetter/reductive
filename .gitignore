@@ -1,5 +1,6 @@
 .DS_Store
 .merlin
+.vscode
 /node_modules/
 /lib/
 /bundledOutputs/

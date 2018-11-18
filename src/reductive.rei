@@ -18,13 +18,7 @@ module Store: {
     (t('action, 'state), ('state, 'action) => 'state) => unit;
 };
 
-module Lens: {
-  type t('a, 'b);
-  let make: ('a => 'b) => t('a, 'b);
-  let view: (t('a, 'b), 'a) => 'b;
-};
-
-module Provider: {
+module Lense: {
   type state('reductiveState);
   type action =
     | UpdateState
@@ -32,25 +26,39 @@ module Provider: {
   let createMake:
     (
       ~name: string=?,
+      ~lense: 'state => 'lense,
       Store.t('action, 'state),
-      Lens.t('state, 'lensed),
       ~component: (
-                    ~state: 'lensed,
+                    ~state: 'lense,
                     ~dispatch: 'action => unit,
                     array(ReasonReact.reactElement)
                   ) =>
                   ReasonReact.component('a, 'b, 'c),
       array(ReasonReact.reactElement)
     ) =>
-    ReasonReact.component(
-      state('lensed),
-      ReasonReact.noRetainedProps,
-      action,
-    );
+    ReasonReact.component(state('lense), ReasonReact.noRetainedProps, action);
+};
+
+module Provider: {
+  type state('reductiveState) = Lense.state('reductiveState);
+  type action = Lense.action;
+  let createMake:
+    (
+      ~name: string=?,
+      Store.t('action, 'state),
+      ~component: (
+                    ~state: 'state,
+                    ~dispatch: 'action => unit,
+                    array(ReasonReact.reactElement)
+                  ) =>
+                  ReasonReact.component('a, 'b, 'c),
+      array(ReasonReact.reactElement)
+    ) =>
+    ReasonReact.component(state('state), ReasonReact.noRetainedProps, action);
 };
 
 /*** These are all visible apis of Redux that aren't needed in Reason.
- * When used, build tools will provide explaination of alternatives.
+ * When used, build tools will provide explanation of alternatives.
  */
 [@ocaml.deprecated
   {|

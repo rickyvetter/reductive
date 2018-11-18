@@ -2,7 +2,8 @@
  * Example using multiple components to represent different slices of state.
  * Updating the state exposed by one component should not cause the other
  * components to also update (visually). Use the React Devtools "highlight
- * updates" feature to see this in action.
+ * updates" feature to see this in action. If that proves difficult, then
+ * try the Chrome devtools Rendering options, enabling "Paint flashing".
  */
 type counterAction =
   | Increment
@@ -58,46 +59,48 @@ let store =
   );
 
 module StringProvider = {
-  let lens = Reductive.Lens.make((a: appState) => a.content);
-  let make = Reductive.Provider.createMake(store, lens);
+  let make = Reductive.Lense.createMake(~lense=s => s.content, store);
 };
 
 module StringComponent = {
-  let component = ReasonReact.statelessComponent("StringComponent");
+  let component =
+    ReasonReact.statelessComponentWithRetainedProps("StringComponent");
   let make = (~state: string, ~dispatch, _children) => {
     ...component,
+    ReasonReact.retainedProps: state,
     render: _self =>
       <div>
-        <div> (ReasonReact.string("Content: " ++ state)) </div>
-        <button onClick=(_ => dispatch(StringAction(AppendA)))>
-          (ReasonReact.string("+A"))
+        <div> {ReasonReact.string("Content: " ++ state)} </div>
+        <button onClick={_ => dispatch(StringAction(AppendA))}>
+          {ReasonReact.string("+A")}
         </button>
-        <button onClick=(_ => dispatch(StringAction(AppendB)))>
-          (ReasonReact.string("+B"))
+        <button onClick={_ => dispatch(StringAction(AppendB))}>
+          {ReasonReact.string("+B")}
         </button>
       </div>,
   };
 };
 
 module CounterProvider = {
-  let lens = Reductive.Lens.make(a => a.counter);
-  let make = Reductive.Provider.createMake(store, lens);
+  let make = Reductive.Lense.createMake(~lense=s => s.counter, store);
 };
 
 module CounterComponent = {
-  let component = ReasonReact.statelessComponent("CounterComponent");
+  let component =
+    ReasonReact.statelessComponentWithRetainedProps("CounterComponent");
   let make = (~state: int, ~dispatch, _children) => {
     ...component,
+    ReasonReact.retainedProps: state,
     render: _self =>
       <div>
         <div>
-          (ReasonReact.string("Counter: " ++ string_of_int(state)))
+          {ReasonReact.string("Counter: " ++ string_of_int(state))}
         </div>
-        <button onClick=(_ => dispatch(CounterAction(Increment)))>
-          (ReasonReact.string("++"))
+        <button onClick={_ => dispatch(CounterAction(Increment))}>
+          {ReasonReact.string("++")}
         </button>
-        <button onClick=(_ => dispatch(CounterAction(Decrement)))>
-          (ReasonReact.string("--"))
+        <button onClick={_ => dispatch(CounterAction(Decrement))}>
+          {ReasonReact.string("--")}
         </button>
       </div>,
   };

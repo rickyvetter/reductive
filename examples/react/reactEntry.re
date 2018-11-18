@@ -1,6 +1,5 @@
 module ThunkedStoreProvider = {
-  let lens = Reductive.Lens.make((a: ThunkedStore.appState) => a);
-  let make = Reductive.Provider.createMake(ThunkedStore.store, lens);
+  let make = Reductive.Provider.createMake(ThunkedStore.store);
 };
 
 ReactDOMRe.renderToElementWithId(<ThunkedStoreProvider component=DataRenderer.make />, "index");
