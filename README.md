@@ -43,6 +43,12 @@ $ npx webpack
 
 You can then open any of the HTML files in the `test` folder within your browser.
 
+## Word of Caution
+
+**[You might not need this library](https://medium.com/@dan_abramov/you-might-not-need-redux-be46360cf367)**, especially so in a language which provides good enough construction blocks out of the box. **ReasonReact [already comes with reducers](https://reasonml.github.io/reason-react/blog/2017/09/01/reducers.html)**!
+
+However, in the spirit of unifying the Reason community around an authoritative Redux implementation and to avoid churn, we'll polish Reductive to make it production-ready for those who do wish to use it anyway.
+
 ## Comparisons with Redux
 
 ### Actions
