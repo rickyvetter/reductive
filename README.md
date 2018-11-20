@@ -3,9 +3,13 @@
 Reductive, like [redux](https://github.com/reactjs/redux), is a predictable
 state container for [Reason](https://github.com/facebook/reason) applications.
 Its scope goes beyond that of managing state for a single component, and
-concerns the application as a whole. While reducer components are fine for
-managing short-lived state, the lifespan of reductive state is that of the
-entire application, making it suitable for high-level business logic.
+concerns the application as a whole.
+
+## Word of Caution
+
+**[You might not need this library](https://medium.com/@dan_abramov/you-might-not-need-redux-be46360cf367)**, especially so in a language which provides good enough construction blocks out of the box. **ReasonReact [already comes with reducers](https://reasonml.github.io/reason-react/blog/2017/09/01/reducers.html)**!
+
+However, in the spirit of unifying the Reason community around an authoritative Redux implementation and to avoid churn, we'll polish Reductive to make it production-ready for those who do wish to use it anyway.
 
 ## Requirements
 
@@ -42,12 +46,6 @@ $ npx webpack
 ```
 
 You can then open any of the HTML files in the `test` folder within your browser.
-
-## Word of Caution
-
-**[You might not need this library](https://medium.com/@dan_abramov/you-might-not-need-redux-be46360cf367)**, especially so in a language which provides good enough construction blocks out of the box. **ReasonReact [already comes with reducers](https://reasonml.github.io/reason-react/blog/2017/09/01/reducers.html)**!
-
-However, in the spirit of unifying the Reason community around an authoritative Redux implementation and to avoid churn, we'll polish Reductive to make it production-ready for those who do wish to use it anyway.
 
 ## Comparisons with Redux
 
