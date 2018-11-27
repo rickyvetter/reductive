@@ -9,7 +9,7 @@
     "src",
     {
       "dir": "examples",
-      "subdirs": ["basic", "react", "immutable", "todomvc"],
+      "subdirs": ["basic", "react", "immutable", "render", "todomvc"],
       "type" : "dev"
     }
   ]

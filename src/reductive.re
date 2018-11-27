@@ -41,7 +41,7 @@ module Store = {
   let replaceReducer = (store, reducer) => store.reducer = reducer;
 };
 
-module Provider = {
+module Lense = {
   type state('reductiveState) = {
     reductiveState: option('reductiveState),
     unsubscribe: option(unit => unit),
@@ -49,13 +49,18 @@ module Provider = {
   type action =
     | UpdateState
     | AddListener(action => unit);
-  let createMake = (~name="Provider", store: Store.t('action, 'state)) => {
+  let createMake =
+      (
+        ~name="Lense",
+        ~lense: 'state => 'lense,
+        store: Store.t('action, 'state),
+      ) => {
     let innerComponent = ReasonReact.reducerComponent(name);
     let make =
         (
           ~component:
              (
-               ~state: 'state,
+               ~state: 'lense,
                ~dispatch: 'action => unit,
                array(ReasonReact.reactElement)
              ) =>
@@ -63,13 +68,13 @@ module Provider = {
           _children: array(ReasonReact.reactElement),
         )
         : ReasonReact.component(
-            state('state),
+            state('lense),
             ReasonReact.noRetainedProps,
             action,
           ) => {
       ...innerComponent,
       initialState: () => {
-        reductiveState: Some(Store.getState(store)),
+        reductiveState: Some(lense(Store.getState(store))),
         unsubscribe: None,
       },
       reducer: (action, state) =>
@@ -78,12 +83,12 @@ module Provider = {
           ReasonReact.Update({
             unsubscribe:
               Some(Store.subscribe(store, _ => send(UpdateState))),
-            reductiveState: Some(Store.getState(store)),
+            reductiveState: Some(lense(Store.getState(store))),
           })
         | UpdateState =>
           ReasonReact.Update({
             ...state,
-            reductiveState: Some(Store.getState(store)),
+            reductiveState: Some(lense(Store.getState(store))),
           })
         },
       didMount: ({send}) => send(AddListener(send)),
@@ -92,6 +97,8 @@ module Provider = {
         | Some(unsubscribe) => unsubscribe()
         | None => ()
         },
+      shouldUpdate: ({oldSelf, newSelf}) =>
+        oldSelf.state.reductiveState !== newSelf.state.reductiveState,
       render: ({state}) =>
         switch (state.reductiveState) {
         | None => ReasonReact.null
@@ -103,6 +110,13 @@ module Provider = {
     };
     make;
   };
+};
+
+module Provider = {
+  type state('reductiveState) = Lense.state('reductiveState);
+  type action = Lense.action;
+  let createMake = (~name="Provider", store: Store.t('action, 'state)) =>
+    Lense.createMake(~name, ~lense=s => s, store);
 };
 
 /*** These are all visible apis of Redux that aren't needed in Reason.
