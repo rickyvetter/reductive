@@ -86,10 +86,14 @@ module Lense = {
             reductiveState: Some(lense(Store.getState(store))),
           })
         | UpdateState =>
-          ReasonReact.Update({
-            ...state,
-            reductiveState: Some(lense(Store.getState(store))),
-          })
+          lense(Store.getState(store))
+          |. Some
+          |. Belt.Option.eq(state.reductiveState, (a,b) => a === b)
+            ? ReasonReact.NoUpdate
+            : ReasonReact.Update({
+              ...state,
+              reductiveState: Some(lense(Store.getState(store))),
+            })
         },
       didMount: ({send}) => send(AddListener(send)),
       willUnmount: ({state}) =>
@@ -97,8 +101,6 @@ module Lense = {
         | Some(unsubscribe) => unsubscribe()
         | None => ()
         },
-      shouldUpdate: ({oldSelf, newSelf}) =>
-        oldSelf.state.reductiveState !== newSelf.state.reductiveState,
       render: ({state}) =>
         switch (state.reductiveState) {
         | None => ReasonReact.null
