@@ -130,3 +130,25 @@ Instead - you are free to build the action data type at dispatch time.
 |}
 ]
 let bindActionCreators: (list('a), 'a => 'b) => list(unit => 'b);
+
+type store('action, 'state) = Store.t('action, 'state);
+type reducer('action, 'state) = ('state, 'action) => 'state;
+
+type middleware('action, 'state) =
+  (store('action, 'state), 'action => unit, 'action) => unit;
+
+type storeCreator('action, 'origin, 'state) =
+  (
+    ~reducer: reducer('action, 'origin),
+    ~preloadedState: 'state,
+    ~enhancer: middleware('action, 'state)=?,
+    unit
+  ) =>
+  store('action, 'state);
+
+type storeEnhancer('action, 'origin, 'state) =
+  storeCreator('action, 'origin, 'state) =>
+  storeCreator('action, 'origin, 'state);
+
+type applyMiddleware('action, 'origin, 'state) =
+  middleware('action, 'state) => storeEnhancer('action, 'origin, 'state);
