@@ -8,3 +8,4 @@ npm-debug.log
 /_build/
 package-lock.json
 *.bs.js
+.bsb.lock

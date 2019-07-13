@@ -8,13 +8,6 @@
   },
   "bs-dependencies": ["reason-react"],
   "bs-dev-dependencies": ["immutable-re"],
-  "package-specs": [
-    {
-      "module": "commonjs",
-      "in-source": true
-    }
-  ],
-  "suffix": ".bs.js",
   "sources": [
     "src",
     {
