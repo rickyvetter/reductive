@@ -66,16 +66,13 @@ module Make = (Config: Config) => {
 
   let useSelector = selector => {
     let storeFromContext = React.useContext(Context.context);
-    // used to force render the component when the selected state changes
     let (_, forceRerender) = React.useReducer((s, _) => s + 1, 0);
 
     // initialize ref to None to avoid reevaluating selector function on each rerender
     let latestSelectedState = React.useRef(None);
-
     let latestSelector = React.useRef(selector);
 
-    // remember selector function and new selected state when the selector function changes,
-    // typical scenario - using components' props inside selector
+    // selector function might change if using components' props to select state
     React.useLayoutEffect1(
       () => {
         React.Ref.setCurrent(latestSelector, selector);
