@@ -18,44 +18,29 @@ module Store: {
     (t('action, 'state), ('state, 'action) => 'state) => unit;
 };
 
-module Lense: {
-  type state('reductiveState);
-  type action =
-    | UpdateState
-    | AddListener(action => unit);
-  let createMake:
-    (
-      ~name: string=?,
-      ~lense: 'state => 'lense,
-      Store.t('action, 'state),
-      ~component: (
-                    ~state: 'lense,
-                    ~dispatch: 'action => unit,
-                    array(ReasonReact.reactElement)
-                  ) =>
-                  ReasonReact.component('a, 'b, 'c),
-      array(ReasonReact.reactElement)
-    ) =>
-    ReasonReact.component(state('lense), ReasonReact.noRetainedProps, action);
+module type Config = {
+  type state;
+  type action;
+  let store: Store.t(action, state);
 };
-
-module Provider: {
-  type state('reductiveState) = Lense.state('reductiveState);
-  type action = Lense.action;
-  let createMake:
-    (
-      ~name: string=?,
-      Store.t('action, 'state),
-      ~component: (
-                    ~state: 'state,
-                    ~dispatch: 'action => unit,
-                    array(ReasonReact.reactElement)
-                  ) =>
-                  ReasonReact.component('a, 'b, 'c),
-      array(ReasonReact.reactElement)
-    ) =>
-    ReasonReact.component(state('state), ReasonReact.noRetainedProps, action);
-};
+module Make:
+  (Config: Config) =>
+   {
+    module Context: {
+      type t = Store.t(Config.action, Config.state);
+      let context: React.Context.t(t);
+    };
+    module Provider: {
+      [@bs.obj]
+      external makeProps:
+        (~children: 'children, ~key: string=?, unit) =>
+        {. "children": 'children} =
+        "";
+      let make: {. "children": React.element} => React.element;
+    };
+    let useSelector: (Config.state => 'a) => 'a;
+    let useDispatch: (unit, Config.action) => unit;
+  };
 
 /*** These are all visible apis of Redux that aren't needed in Reason.
  * When used, build tools will provide explanation of alternatives.

@@ -41,84 +41,91 @@ module Store = {
   let replaceReducer = (store, reducer) => store.reducer = reducer;
 };
 
-module Lense = {
-  type state('reductiveState) = {
-    reductiveState: option('reductiveState),
-    unsubscribe: option(unit => unit),
-  };
-  type action =
-    | UpdateState
-    | AddListener(action => unit);
-  let createMake =
-      (
-        ~name="Lense",
-        ~lense: 'state => 'lense,
-        store: Store.t('action, 'state),
-      ) => {
-    let innerComponent = ReasonReact.reducerComponent(name);
-    let make =
-        (
-          ~component:
-             (
-               ~state: 'lense,
-               ~dispatch: 'action => unit,
-               array(ReasonReact.reactElement)
-             ) =>
-             ReasonReact.component('a, 'b, 'c),
-          _children: array(ReasonReact.reactElement),
-        )
-        : ReasonReact.component(
-            state('lense),
-            ReasonReact.noRetainedProps,
-            action,
-          ) => {
-      ...innerComponent,
-      initialState: () => {
-        reductiveState: Some(lense(Store.getState(store))),
-        unsubscribe: None,
-      },
-      reducer: (action, state) =>
-        switch (action) {
-        | AddListener(send) =>
-          ReasonReact.Update({
-            unsubscribe:
-              Some(Store.subscribe(store, _ => send(UpdateState))),
-            reductiveState: Some(lense(Store.getState(store))),
-          })
-        | UpdateState =>
-          lense(Store.getState(store))
-          |. Some
-          |. Belt.Option.eq(state.reductiveState, (a,b) => a === b)
-            ? ReasonReact.NoUpdate
-            : ReasonReact.Update({
-              ...state,
-              reductiveState: Some(lense(Store.getState(store))),
-            })
-        },
-      didMount: ({send}) => send(AddListener(send)),
-      willUnmount: ({state}) =>
-        switch (state.unsubscribe) {
-        | Some(unsubscribe) => unsubscribe()
-        | None => ()
-        },
-      render: ({state}) =>
-        switch (state.reductiveState) {
-        | None => ReasonReact.null
-        | Some(state) =>
-          ReasonReact.element(
-            component(~state, ~dispatch=Store.dispatch(store), [||]),
-          )
-        },
-    };
-    make;
-  };
+module type Config = {
+  type state;
+  type action;
+
+  let store: Store.t(action, state);
 };
 
-module Provider = {
-  type state('reductiveState) = Lense.state('reductiveState);
-  type action = Lense.action;
-  let createMake = (~name="Provider", store: Store.t('action, 'state)) =>
-    Lense.createMake(~name, ~lense=s => s, store);
+module Make = (Config: Config) => {
+  module Context = {
+    type t = Store.t(Config.action, Config.state);
+    include Context.Make({
+      type context = t;
+      let defaultValue = Config.store;
+    });
+  };
+
+  module Provider = {
+    [@react.component]
+    let make = (~children) => {
+      <Context.Provider value=Config.store> children </Context.Provider>;
+    };
+  };
+
+  let useSelector = selector => {
+    let storeFromContext = React.useContext(Context.context);
+    // used to force render the component when the selected state changes
+    let (_, forceRerender) = React.useReducer((s, _) => s + 1, 0);
+
+    // initialize ref to None to avoid reevaluating selector function on each rerender
+    let latestSelectedState = React.useRef(None);
+
+    let latestSelector = React.useRef(selector);
+
+    // remember selector function and new selected state when the selector function changes,
+    // typical scenario - using components' props inside selector
+    React.useLayoutEffect1(
+      () => {
+        React.Ref.setCurrent(latestSelector, selector);
+
+        let newSelectedState = selector(Store.getState(Config.store));
+        React.Ref.setCurrent(latestSelectedState, Some(newSelectedState));
+        None;
+      },
+      [|selector|],
+    );
+
+    React.useLayoutEffect1(
+      () => {
+        let checkForUpdates = () => {
+          let newSelectedState = selector(Store.getState(Config.store));
+
+          let hasStateChanged =
+            switch (React.Ref.current(latestSelectedState)) {
+            | None => true
+            | Some(state) => newSelectedState !== state
+            };
+
+          if (hasStateChanged) {
+            React.Ref.setCurrent(
+              latestSelectedState,
+              Some(newSelectedState),
+            );
+            forceRerender();
+          };
+        };
+        Some(Store.subscribe(storeFromContext, checkForUpdates));
+      },
+      [|storeFromContext|],
+    );
+
+    let currentStoreState = Store.getState(Config.store);
+    if (React.Ref.current(latestSelector) !== selector) {
+      selector(currentStoreState);
+    } else {
+      switch (React.Ref.current(latestSelectedState)) {
+      | None => selector(currentStoreState)
+      | Some(state) => state
+      };
+    };
+  };
+
+  let useDispatch = () => {
+    let storeFromContext = React.useContext(Context.context);
+    Store.dispatch(storeFromContext);
+  };
 };
 
 /*** These are all visible apis of Redux that aren't needed in Reason.

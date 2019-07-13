@@ -7,7 +7,8 @@
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
-    "test": "bsb -make-world"
+    "test": "bsb -make-world",
+    "webpack": "webpack -w"
   },
   "repository": {
     "type": "git",
@@ -24,15 +25,16 @@
   ],
   "author": "rickyvetter",
   "license": "MIT",
+  "peerDependencies": {
+    "reason-react": "^0.7.0"
+  },
   "devDependencies": {
-    "bs-platform": "^4.0.6",
+    "bs-platform": "^5.0.6",
+    "reason-react": "^0.7.0",
     "immutable-re": "https://github.com/facebookincubator/immutable-re.git",
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "webpack": "^4.21.0",
     "webpack-cli": "^3.1.2"
-  },
-  "dependencies": {
-    "reason-react": "^0.5.3"
   }
 }

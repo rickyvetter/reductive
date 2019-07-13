@@ -2,15 +2,25 @@
   "name": "reductive",
   "refmt": 3,
   "bsc-flags": ["-bs-super-errors"],
-  "reason": {"react-jsx" : 2},
+  "namespace": true,
+  "reason": {
+    "react-jsx": 3
+  },
   "bs-dependencies": ["reason-react"],
   "bs-dev-dependencies": ["immutable-re"],
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
   "sources": [
     "src",
     {
       "dir": "examples",
       "subdirs": ["basic", "react", "immutable", "render", "todomvc"],
-      "type" : "dev"
+      "type": "dev"
     }
   ]
 }
