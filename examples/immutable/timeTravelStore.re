@@ -33,54 +33,64 @@ let past = ref(Immutable.Stack.empty());
 
 let future = ref(Immutable.Stack.empty());
 
-let goBack = (currentState) =>
+let goBack = currentState =>
   switch (Immutable.Stack.first(past^)) {
   | Some(lastState) =>
     future := Immutable.Stack.addFirst(currentState, future^);
     if (Immutable.Stack.isNotEmpty(past^)) {
-      past := Immutable.Stack.removeFirstOrRaise(past^)
+      past := Immutable.Stack.removeFirstOrRaise(past^);
     };
-    lastState
+    lastState;
   | None => currentState
   };
 
-let goForward = (currentState) =>
+let goForward = currentState =>
   switch (Immutable.Stack.first(future^)) {
   | Some(nextState) =>
     past := Immutable.Stack.addFirst(currentState, past^);
     if (Immutable.Stack.isNotEmpty(future^)) {
-      future := Immutable.Stack.removeFirstOrRaise(future^)
+      future := Immutable.Stack.removeFirstOrRaise(future^);
     };
-    nextState
+    nextState;
   | None => currentState
   };
 
-let recordHistory = (currentState) => {
+let recordHistory = currentState => {
   past := Immutable.Stack.addFirst(currentState, past^);
-  future := Immutable.Stack.empty()
+  future := Immutable.Stack.empty();
 };
 
 let timeTravel = (store, next, action) => {
   let currentState = Reductive.Store.getState(store);
-  switch action {
+  switch (action) {
   | TravelBackward => next(ReplaceState(goBack(currentState)))
   | TravelForward => next(ReplaceState(goForward(currentState)))
   | _ =>
     next(action);
     let newState = Reductive.Store.getState(store);
     if (currentState !== newState) {
-      recordHistory(currentState)
-    }
-  }
+      recordHistory(currentState);
+    };
+  };
 };
 
 let thunkedLoggedTimeTravelLogger = (store, next) =>
-  Middleware.thunk(store) @@ Middleware.logger(store) @@ timeTravel(store) @@ next;
+  Middleware.thunk(store) @@
+  Middleware.logger(store) @@
+  timeTravel(store) @@
+  next;
 
-let store =
+let timeTravelStore =
   Reductive.Store.create(
     ~reducer=appReducter,
     ~preloadedState={counter: 0, notACounter: ""},
     ~enhancer=thunkedLoggedTimeTravelLogger,
-    ()
+    (),
   );
+
+include Reductive.Make({
+  type action = ReduxThunk.thunk(AppState.appState);
+  type state = AppState.appState;
+
+  let store = timeTravelStore;
+});
