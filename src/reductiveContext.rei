@@ -6,10 +6,6 @@ module type Config = {
 module Make:
   (Config: Config) =>
    {
-    module Context: {
-      type t = Reductive.Store.t(Config.action, Config.state);
-      let context: React.Context.t(t);
-    };
     module Provider: {
       [@bs.obj]
       external makeProps:

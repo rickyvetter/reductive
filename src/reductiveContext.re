@@ -1,33 +1,4 @@
 [@bs.config {jsx: 3}];
-module Context = {
-  module type Config = {
-    type context;
-    let defaultValue: context;
-  };
-  
-  module Make = (Config: Config) => {
-    let context = React.createContext(Config.defaultValue);
-
-    module Provider = {
-      let make = context->React.Context.provider;
-      [@bs.obj]
-      external makeProps:
-        (
-          ~value: Config.context,
-          ~children: React.element,
-          ~key: string=?,
-          unit
-        ) =>
-        {
-          .
-          "value": Config.context,
-          "children": React.element,
-        } =
-        "";
-    };
-  };  
-}
-
 module type Config = {
   type state;
   type action;
@@ -36,23 +7,25 @@ module type Config = {
 };
 
 module Make = (Config: Config) => {
-  module Context = {
-    type t = Reductive.Store.t(Config.action, Config.state);
-    include Context.Make({
-      type context = t;
-      let defaultValue = Config.store;
-    });
+  let storeContext = React.createContext(Config.store);
+
+  module ContextProvider = {
+    let make = React.Context.provider(storeContext);
+    let makeProps = (~value, ~children, ()) => {
+      "value": value,
+      "children": children,
+    };
   };
 
   module Provider = {
     [@react.component]
     let make = (~children) => {
-      <Context.Provider value=Config.store> children </Context.Provider>;
+      <ContextProvider value=Config.store> children </ContextProvider>;
     };
   };
 
   let useSelector = selector => {
-    let storeFromContext = React.useContext(Context.context);
+    let storeFromContext = React.useContext(storeContext);
     let (_, forceRerender) = React.useReducer((s, _) => s + 1, 0);
 
     // initialize ref to None to avoid reevaluating selector function on each rerender
@@ -109,7 +82,7 @@ module Make = (Config: Config) => {
   };
 
   let useDispatch = () => {
-    let storeFromContext = React.useContext(Context.context);
+    let storeFromContext = React.useContext(storeContext);
     Reductive.Store.dispatch(storeFromContext);
   };
 };
