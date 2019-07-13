@@ -1,3 +1,4 @@
+[@bs.config {jsx: 3}];
 open SimpleStore;
 
 type stringAction =
@@ -36,7 +37,7 @@ let appStore =
     (),
   );
 
-include Reductive.Make({
+include ReductiveContext.Make({
   type state = appState;
   type action = ReduxThunk.thunk(appState);
 

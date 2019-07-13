@@ -18,29 +18,44 @@ module Store: {
     (t('action, 'state), ('state, 'action) => 'state) => unit;
 };
 
-module type Config = {
-  type state;
-  type action;
-  let store: Store.t(action, state);
+module Lense: {
+  type state('reductiveState);
+  type action =
+    | UpdateState
+    | AddListener(action => unit);
+  let createMake:
+    (
+      ~name: string=?,
+      ~lense: 'state => 'lense,
+      Store.t('action, 'state),
+      ~component: (
+                    ~state: 'lense,
+                    ~dispatch: 'action => unit,
+                    array(ReasonReact.reactElement)
+                  ) =>
+                  ReasonReact.component('a, 'b, 'c),
+      array(ReasonReact.reactElement)
+    ) =>
+    ReasonReact.component(state('lense), ReasonReact.noRetainedProps, action);
 };
-module Make:
-  (Config: Config) =>
-   {
-    module Context: {
-      type t = Store.t(Config.action, Config.state);
-      let context: React.Context.t(t);
-    };
-    module Provider: {
-      [@bs.obj]
-      external makeProps:
-        (~children: 'children, ~key: string=?, unit) =>
-        {. "children": 'children} =
-        "";
-      let make: {. "children": React.element} => React.element;
-    };
-    let useSelector: (Config.state => 'a) => 'a;
-    let useDispatch: (unit, Config.action) => unit;
-  };
+
+module Provider: {
+  type state('reductiveState) = Lense.state('reductiveState);
+  type action = Lense.action;
+  let createMake:
+    (
+      ~name: string=?,
+      Store.t('action, 'state),
+      ~component: (
+                    ~state: 'state,
+                    ~dispatch: 'action => unit,
+                    array(ReasonReact.reactElement)
+                  ) =>
+                  ReasonReact.component('a, 'b, 'c),
+      array(ReasonReact.reactElement)
+    ) =>
+    ReasonReact.component(state('state), ReasonReact.noRetainedProps, action);
+};
 
 /*** These are all visible apis of Redux that aren't needed in Reason.
  * When used, build tools will provide explanation of alternatives.
@@ -49,7 +64,6 @@ module Make:
   {|
 Use the |> as an infix operator to chain the
 result of one function into another:
-
 `compose(f, g, h)(x)`
 in JS goes to
 `x |> h |> g |> f`
@@ -62,7 +76,6 @@ let compose: _ => unit;
   {|
 combineReducers uses some introspection to determine
 the shape of your state. Instead, consider a declarative pattern like:
-
 type counterAction =
 | Increment
 | Decrement;
@@ -73,12 +86,10 @@ type action =
 | StringAction stringAction
 | CounterAction counterAction;
 type state = {string, counter};
-
 let combinedReducer state action => {
 | StringAction action => {...state, string: stringReducer state action}
 | CounterAction action => {...state, counter: counterReducer state action}
 };
-
 this pattern gives you full control over the shape of your state.
 |}
 ]
@@ -90,9 +101,7 @@ The enhancer attribute in Redux allows you
 to provide a custom dispatch method (to perform more
 actions before or after the dispatch function). You can simply pass in
 a function directly which handles the exact actions you're looking for.
-
 To chain middlewares you can do something like:
-
 let thunkedLoggedTimeTravelLogger store next =>
   Middleware.thunk store @@
   Middleware.logger store @@
@@ -107,10 +116,8 @@ let applyMiddleware: _ => unit;
 bindActionCreators is not as useful in Reason,
 since action creators are types, not functions.
 The code is implemented as:
-
 let bindActionCreators actions dispatch =>
 List.map (fun action () => dispatch action) actions;
-
 Instead - you are free to build the action data type at dispatch time.
 |}
 ]

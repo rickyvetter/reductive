@@ -1,3 +1,4 @@
+[@bs.config {jsx: 3}];
 /*
  * Example using multiple components to represent different slices of state.
  * Updating the state exposed by one component should not cause the other
@@ -59,7 +60,7 @@ let appStore =
   );
 
 module AppStore = {
-  include Reductive.Make({
+  include ReductiveContext.Make({
     type state = appState;
     type action = ReduxThunk.thunk(appState);
   

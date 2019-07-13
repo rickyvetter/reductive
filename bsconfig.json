@@ -4,7 +4,7 @@
   "bsc-flags": ["-bs-super-errors"],
   "namespace": true,
   "reason": {
-    "react-jsx": 3
+    "react-jsx": 2
   },
   "bs-dependencies": ["reason-react"],
   "bs-dev-dependencies": ["immutable-re"],
@@ -12,7 +12,7 @@
     "src",
     {
       "dir": "examples",
-      "subdirs": ["basic", "react", "immutable", "render", "todomvc"],
+      "subdirs": ["basic", "react", "immutable", "render", "render-v2", "todomvc"],
       "type": "dev"
     }
   ]

@@ -1,3 +1,4 @@
+[@bs.config {jsx: 3}];
 [@react.component]
 let make = () => {
   let state = TimeTravelStore.useSelector(state => state);

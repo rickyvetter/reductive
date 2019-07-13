@@ -1,3 +1,4 @@
+[@bs.config {jsx: 3}];
 /**
   * Example of a todo list, loosely based on the redux example, mixed with
   * some code from Jared Forsyth's ReasonReact tutorial, and Cheng Lou's
@@ -82,7 +83,7 @@ let appStore =
   );
 
 module AppStore = {
-  include Reductive.Make({
+  include ReductiveContext.Make({
     type action = appAction;
     type state = appState;
 
