@@ -50,7 +50,7 @@ let appReducer = (state, action) =>
 let thunkedLogger = (store, next) =>
   Middleware.thunk(store) @@ Middleware.logger(store) @@ next;
 
-let store =
+let appStore =
   Reductive.Store.create(
     ~reducer=appReducer,
     ~preloadedState={counter: 0, content: ""},
@@ -58,63 +58,57 @@ let store =
     (),
   );
 
-module StringProvider = {
-  let make = Reductive.Lense.createMake(~lense=s => s.content, store);
-};
+module AppStore = {
+  include Reductive.Make({
+    type state = appState;
+    type action = ReduxThunk.thunk(appState);
+  
+    let store = appStore;
+  });
+}
 
 module StringComponent = {
-  let component =
-    ReasonReact.statelessComponentWithRetainedProps("StringComponent");
-  let make = (~state: string, ~dispatch, _children) => {
-    ...component,
-    ReasonReact.retainedProps: state,
-    render: _self =>
-      <div>
-        <div> {ReasonReact.string("Content: " ++ state)} </div>
-        <button onClick={_ => dispatch(StringAction(AppendA))}>
-          {ReasonReact.string("+A")}
-        </button>
-        <button onClick={_ => dispatch(StringAction(AppendB))}>
-          {ReasonReact.string("+B")}
-        </button>
-      </div>,
+  [@react.component]
+  let make = () => {
+    let dispatch = AppStore.useDispatch();
+    let state = AppStore.useSelector(state => state.content);
+
+    <div>
+      <div> {ReasonReact.string("Content: " ++ state)} </div>
+      <button onClick={_ => dispatch(StringAction(AppendA))}>
+        {ReasonReact.string("+A")}
+      </button>
+      <button onClick={_ => dispatch(StringAction(AppendB))}>
+        {ReasonReact.string("+B")}
+      </button>
+    </div>;
   };
 };
 
-module CounterProvider = {
-  let make = Reductive.Lense.createMake(~lense=s => s.counter, store);
-};
-
 module CounterComponent = {
-  let component =
-    ReasonReact.statelessComponentWithRetainedProps("CounterComponent");
-  let make = (~state: int, ~dispatch, _children) => {
-    ...component,
-    ReasonReact.retainedProps: state,
-    render: _self =>
+  [@react.component]
+  let make = () => {
+    let dispatch = AppStore.useDispatch();
+    let state = AppStore.useSelector(state => state.counter);
+
+    <div>
       <div>
-        <div>
-          {ReasonReact.string("Counter: " ++ string_of_int(state))}
-        </div>
-        <button onClick={_ => dispatch(CounterAction(Increment))}>
-          {ReasonReact.string("++")}
-        </button>
-        <button onClick={_ => dispatch(CounterAction(Decrement))}>
-          {ReasonReact.string("--")}
-        </button>
-      </div>,
+        {ReasonReact.string("Counter: " ++ string_of_int(state))}
+      </div>
+      <button onClick={_ => dispatch(CounterAction(Increment))}>
+        {ReasonReact.string("++")}
+      </button>
+      <button onClick={_ => dispatch(CounterAction(Decrement))}>
+        {ReasonReact.string("--")}
+      </button>
+    </div>;
   };
 };
 
 module RenderApp = {
-  let component = ReasonReact.statelessComponent("RenderApp");
-  let make = _children => {
-    ...component,
-    render: _self =>
-      <div>
-        <CounterProvider component=CounterComponent.make />
-        <StringProvider component=StringComponent.make />
-      </div>,
+  [@react.component]
+  let make = () => {
+    <div> <CounterComponent /> <StringComponent /> </div>;
   };
 };
 
