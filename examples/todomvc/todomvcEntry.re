@@ -332,4 +332,7 @@ module App = {
   };
 };
 
-ReactDOMRe.renderToElementWithId(<App />, "TodoApp");
+ReactDOMRe.renderToElementWithId(
+  <AppStore.Provider> <App /> </AppStore.Provider>,
+  "TodoApp",
+);

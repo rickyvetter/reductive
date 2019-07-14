@@ -65,7 +65,10 @@ module Make = (Config: Config) => {
             forceRerender();
           };
         };
-        Some(Reductive.Store.subscribe(storeFromContext, checkForUpdates));
+        let unsubscribeFn =
+          Reductive.Store.subscribe(storeFromContext, checkForUpdates);
+
+        Some(unsubscribeFn);
       },
       [|storeFromContext|],
     );
