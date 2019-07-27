@@ -1233,9 +1233,9 @@ ignore-walk@^3.0.1:
   dependencies:
     minimatch "^3.0.4"
 
-"immutable-re@https://github.com/facebookincubator/immutable-re.git":
+"immutable-re@https://github.com/facebookarchive/immutable-re.git":
   version "0.0.15"
-  resolved "https://github.com/facebookincubator/immutable-re.git#d55f65f7fc638ac17cfdd8064a0401d4cde5aad2"
+  resolved "https://github.com/facebookarchive/immutable-re.git#d55f65f7fc638ac17cfdd8064a0401d4cde5aad2"
   dependencies:
     bs-platform "^2.2.1"
 
