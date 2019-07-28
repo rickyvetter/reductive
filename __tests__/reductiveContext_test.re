@@ -73,12 +73,10 @@ describe("useSelector", () => {
   });
 
   test("selects the state and re-renders component on store updates", () => {
+    let selector = (state: TestStoreContext.testState) => state.counter;
+
     let container =
-      renderHook(
-        () => TestStoreContext.useSelector(state => state.counter),
-        ~options,
-        (),
-      );
+      renderHook(() => TestStoreContext.useSelector(selector), ~options, ());
 
     act(() => {
       Reductive.Store.dispatch(TestStoreContext.appStore, Increment);
@@ -89,12 +87,13 @@ describe("useSelector", () => {
   });
 
   test("always gives back the latest state", () => {
+    let selector = (state: TestStoreContext.testState) => state.counter;
     let renderedStates: ref(array(int)) = ref([||]);
 
     module Comp = {
       [@react.component]
       let make = () => {
-        let counter = TestStoreContext.useSelector(s => s.counter);
+        let counter = TestStoreContext.useSelector(selector);
         renderedStates := Belt.Array.concat(renderedStates^, [|counter|]);
         <div />;
       };
@@ -114,11 +113,12 @@ describe("useSelector", () => {
 
   test("prevents re-render if selected state is referentially equal", () => {
     let renderedStates: ref(array(int)) = ref([||]);
+    let selector = (state: TestStoreContext.testState) => state.counter;
 
     module Comp = {
       [@react.component]
       let make = () => {
-        let counter = TestStoreContext.useSelector(s => s.counter);
+        let counter = TestStoreContext.useSelector(selector);
         renderedStates := Belt.Array.concat(renderedStates^, [|counter|]);
         <div />;
       };
@@ -142,7 +142,14 @@ describe("useSelector", () => {
     module Comp = {
       [@react.component]
       let make = (~prop) => {
-        let counter = TestStoreContext.useSelector(s => s.counter + prop);
+        let selector =
+          React.useCallback1(
+            (s: TestStoreContext.testState) => s.counter + prop,
+            [|prop|],
+          );
+
+        let counter = TestStoreContext.useSelector(selector);
+
         renderedStates := Belt.Array.concat(renderedStates^, [|counter|]);
         <div />;
       };
@@ -162,22 +169,33 @@ describe("useSelector", () => {
     render(element) |> ignore;
 
     act(() => {
-      Reductive.Store.dispatch(TestStoreContext.appStore, Increment); // state.counter - 1, prop - 0
-      updateProp^(); // state.counter - 1, prop - 1
-      updateProp^(); // state.counter - 1, prop - 2
-      Reductive.Store.dispatch(TestStoreContext.appStore, Increment); // state.counter - 2, prop - 2
+      Reductive.Store.dispatch(TestStoreContext.appStore, Increment); // state.counter - 1, prop - 0, total - 1
+      updateProp^(); // state.counter - 1, prop - 1, total - 2
+      Reductive.Store.dispatch(TestStoreContext.appStore, Increment); // state.counter - 2, prop - 1, total - 3
+      updateProp^(); // state.counter - 2, prop - 2, total - 4
+      Reductive.Store.dispatch(TestStoreContext.appStore, Increment); // state.counter - 3, prop - 2, total - 5
       ();
     });
-    expect(renderedStates^) |> toEqual([|0, 1, 2, 3, 4|]);
+
+    // changing selector function that depends on props leads to double re-render and duplicated state values
+    let distinctRenderState =
+      (renderedStates^)
+      ->Belt.Array.keepWithIndex((value, index) =>
+          (renderedStates^)
+          ->Belt.Array.getIndexBy(v => v === value)
+          ->Belt.Option.getWithDefault(-1)
+          === index
+        );
+    expect(distinctRenderState) |> toEqual([|0, 1, 2, 3, 4, 5|]);
   });
 
   test("removes subscription on unmount", () => {
     let setupSpy: selectorMockTest => spyReturnMockValue = [%bs.raw
       {|
-      function (obj) {
-        return jest.spyOn(obj, "selector");
-      }
-    |}
+       function (obj) {
+         return jest.spyOn(obj, "selector");
+       }
+     |}
     ];
 
     let selector = (state: TestStoreContext.testState) => state.counter;
@@ -211,11 +229,11 @@ describe("useSelector", () => {
 
     let expectSelectorToHaveBeenCalled: spyReturnMockValue => unit = [%bs.raw
       {|
-        function (spy) {
-          console.log(spy)
-          return expect(spy).toHaveBeenCalledTimes(0)
-        }
-      |}
+         function (spy) {
+           console.log(spy)
+           return expect(spy).toHaveBeenCalledTimes(0)
+         }
+       |}
     ];
 
     expectSelectorToHaveBeenCalled(spy);

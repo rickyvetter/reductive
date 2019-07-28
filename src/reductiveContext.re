@@ -24,64 +24,92 @@ module Make = (Config: Config) => {
     };
   };
 
+  type source('a) = {
+    subscribe: (unit => unit, unit) => unit,
+    getCurrentValue: unit => 'a,
+    value: 'a,
+  };
+
+  let useSubscription =
+      (subscribe: (unit => unit, unit) => unit, getCurrentValue: unit => 'a)
+      : 'a => {
+    let hasSubscriptionChanged = prevState =>
+      prevState.getCurrentValue !== getCurrentValue
+      || prevState.subscribe !== subscribe;
+
+    let (state, setState) =
+      React.useState(() =>
+        {getCurrentValue, subscribe, value: getCurrentValue()}
+      );
+
+    React.useEffect2(
+      () => {
+        let didUnsubscribe = ref(false);
+
+        let updateState = () =>
+          setState(prevState =>
+            if (hasSubscriptionChanged(prevState)) {
+              prevState;
+            } else {
+              let newValue = getCurrentValue();
+
+              prevState.value === newValue
+                ? prevState : {...prevState, value: newValue};
+            }
+          );
+
+        let checkForUpdates = () =>
+          if (! didUnsubscribe^) {
+            updateState();
+          };
+
+        // state value might have changed between unscribing and subscribing again due
+        // to a new selector function (e.g. because of a change in props used inside of it).
+        let newValue = getCurrentValue();
+        if (state.value !== newValue) {
+          setState(prevState => {...prevState, value: newValue});
+        };
+
+        let unsubscribe = subscribe(checkForUpdates);
+
+        Some(
+          () => {
+            didUnsubscribe := true;
+            unsubscribe();
+          },
+        );
+      },
+      (getCurrentValue, subscribe),
+    );
+
+    // evaluate the return value
+    if (hasSubscriptionChanged(state)) {
+      let newValue = getCurrentValue();
+      setState(_ => {getCurrentValue, subscribe, value: newValue});
+
+      newValue;
+    } else {
+      state.value;
+    };
+  };
+
   let useSelector = selector => {
     let storeFromContext = React.useContext(storeContext);
-    let (_, forceRerender) = React.useReducer((s, _) => s + 1, 0);
+    let subscribe =
+      React.useCallback1(
+        Reductive.Store.subscribe(storeFromContext),
+        [|storeFromContext|],
+      );
 
-    // initialize ref to None to avoid reevaluating selector function on each rerender
-    let latestSelectedState = React.useRef(None);
-    let latestSelector = React.useRef(selector);
+    let getCurrentValue =
+      React.useCallback2(
+        () => selector(Reductive.Store.getState(storeFromContext)),
+        (selector, storeFromContext),
+      );
 
-    // selector function might change if using components' props to select state
-    React.useLayoutEffect1(
-      () => {
-        React.Ref.setCurrent(latestSelector, selector);
+    let selectedState = useSubscription(subscribe, getCurrentValue);
 
-        let newSelectedState =
-          selector(Reductive.Store.getState(Config.store));
-        React.Ref.setCurrent(latestSelectedState, Some(newSelectedState));
-        None;
-      },
-      [|selector|],
-    );
-
-    React.useLayoutEffect1(
-      () => {
-        let checkForUpdates = () => {
-          let newSelectedState =
-            selector(Reductive.Store.getState(Config.store));
-
-          let hasStateChanged =
-            switch (React.Ref.current(latestSelectedState)) {
-            | None => true
-            | Some(state) => newSelectedState !== state
-            };
-
-          if (hasStateChanged) {
-            React.Ref.setCurrent(
-              latestSelectedState,
-              Some(newSelectedState),
-            );
-            forceRerender();
-          };
-        };
-        let unsubscribeFn =
-          Reductive.Store.subscribe(storeFromContext, checkForUpdates);
-
-        Some(unsubscribeFn);
-      },
-      [|storeFromContext|],
-    );
-
-    let currentStoreState = Reductive.Store.getState(Config.store);
-    if (React.Ref.current(latestSelector) !== selector) {
-      selector(currentStoreState);
-    } else {
-      switch (React.Ref.current(latestSelectedState)) {
-      | None => selector(currentStoreState)
-      | Some(state) => state
-      };
-    };
+    selectedState;
   };
 
   let useDispatch = () => {
