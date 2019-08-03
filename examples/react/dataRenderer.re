@@ -1,6 +1,8 @@
+let stateSelector = state => state;
+
 [@react.component]
 let make = () => {
-  let state = ThunkedStore.useSelector(state => state);
+  let state = ThunkedStore.useSelector(stateSelector);
   let dispatch = ThunkedStore.useDispatch();
 
   let incrementIfOdd =

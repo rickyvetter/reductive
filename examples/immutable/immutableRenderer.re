@@ -1,7 +1,9 @@
 [@bs.config {jsx: 3}];
+
+let stateSelector = state => state;
 [@react.component]
 let make = () => {
-  let state = TimeTravelStore.useSelector(state => state);
+  let state = TimeTravelStore.useSelector(stateSelector);
   let dispatch = TimeTravelStore.useDispatch();
 
   let incrementIfOdd =
