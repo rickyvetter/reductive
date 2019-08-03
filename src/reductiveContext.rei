@@ -14,6 +14,6 @@ module Make:
         "";
       let make: {. "children": React.element} => React.element;
     };
-    let useSelector: (Config.state => 'a) => 'a;
+    let useSelector: (Config.state => 'selectedState) => 'selectedState;
     let useDispatch: (unit, Config.action) => unit;
   };

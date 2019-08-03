@@ -315,11 +315,13 @@ module Footer = {
   };
 };
 
+let stateSelector = state => state;
+
 module App = {
   [@react.component]
   let make = () => {
     let dispatch = AppStore.useDispatch();
-    let state = AppStore.useSelector(state => state);
+    let state = AppStore.useSelector(stateSelector);
 
     <div>
       <header className="header">

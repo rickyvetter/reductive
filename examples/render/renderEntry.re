@@ -63,16 +63,17 @@ module AppStore = {
   include ReductiveContext.Make({
     type state = appState;
     type action = ReduxThunk.thunk(appState);
-  
+
     let store = appStore;
   });
-}
+};
 
+let contentSelector = state => state.content;
 module StringComponent = {
   [@react.component]
   let make = () => {
     let dispatch = AppStore.useDispatch();
-    let state = AppStore.useSelector(state => state.content);
+    let state = AppStore.useSelector(contentSelector);
 
     <div>
       <div> {ReasonReact.string("Content: " ++ state)} </div>
@@ -86,16 +87,16 @@ module StringComponent = {
   };
 };
 
+let counterSelector = state => state.counter;
+
 module CounterComponent = {
   [@react.component]
   let make = () => {
     let dispatch = AppStore.useDispatch();
-    let state = AppStore.useSelector(state => state.counter);
+    let state = AppStore.useSelector(counterSelector);
 
     <div>
-      <div>
-        {ReasonReact.string("Counter: " ++ string_of_int(state))}
-      </div>
+      <div> {ReasonReact.string("Counter: " ++ string_of_int(state))} </div>
       <button onClick={_ => dispatch(CounterAction(Increment))}>
         {ReasonReact.string("++")}
       </button>
