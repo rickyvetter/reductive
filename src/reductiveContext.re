@@ -63,14 +63,9 @@ module Make = (Config: Config) => {
             updateState();
           };
 
-        // state value might have changed between unscribing and subscribing again due
-        // to a new selector function (e.g. because of a change in props used inside of it).
-        let newValue = getCurrentValue();
-        if (state.value !== newValue) {
-          setState(prevState => {...prevState, value: newValue});
-        };
-
         let unsubscribe = subscribe(checkForUpdates);
+
+        checkForUpdates();
 
         Some(
           () => {
