@@ -62,12 +62,10 @@ describe("useSelector", () => {
   );
 
   test("sets initial state correctly", () => {
+    let selector = (state: TestStoreContext.testState) => state.counter;
+
     let container =
-      renderHook(
-        () => TestStoreContext.useSelector(state => state.counter),
-        ~options,
-        (),
-      );
+      renderHook(() => TestStoreContext.useSelector(selector), ~options, ());
 
     expect(getResult(container)) |> toEqual(0);
   });

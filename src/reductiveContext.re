@@ -7,6 +7,7 @@ module type Config = {
 };
 
 module Make = (Config: Config) => {
+  open Subscription;
   let storeContext = React.createContext(Config.store);
 
   module ContextProvider = {
@@ -24,85 +25,21 @@ module Make = (Config: Config) => {
     };
   };
 
-  type source('a) = {
-    subscribe: (unit => unit, unit) => unit,
-    getCurrentValue: unit => 'a,
-    value: 'a,
-  };
-
-  let useSubscription =
-      (subscribe: (unit => unit, unit) => unit, getCurrentValue: unit => 'a)
-      : 'a => {
-    let hasSubscriptionChanged = prevState =>
-      prevState.getCurrentValue !== getCurrentValue
-      || prevState.subscribe !== subscribe;
-
-    let (state, setState) =
-      React.useState(() =>
-        {getCurrentValue, subscribe, value: getCurrentValue()}
-      );
-
-    React.useEffect2(
-      () => {
-        let didUnsubscribe = ref(false);
-
-        let updateState = () =>
-          setState(prevState =>
-            if (hasSubscriptionChanged(prevState)) {
-              prevState;
-            } else {
-              let newValue = getCurrentValue();
-
-              prevState.value === newValue
-                ? prevState : {...prevState, value: newValue};
-            }
-          );
-
-        let checkForUpdates = () =>
-          if (! didUnsubscribe^) {
-            updateState();
-          };
-
-        let unsubscribe = subscribe(checkForUpdates);
-
-        checkForUpdates();
-
-        Some(
-          () => {
-            didUnsubscribe := true;
-            unsubscribe();
-          },
-        );
-      },
-      (getCurrentValue, subscribe),
-    );
-
-    // evaluate the return value
-    if (hasSubscriptionChanged(state)) {
-      let newValue = getCurrentValue();
-      setState(_ => {getCurrentValue, subscribe, value: newValue});
-
-      newValue;
-    } else {
-      state.value;
-    };
-  };
-
   let useSelector = selector => {
     let storeFromContext = React.useContext(storeContext);
-    let subscribe =
-      React.useCallback1(
-        Reductive.Store.subscribe(storeFromContext),
-        [|storeFromContext|],
-      );
 
-    let getCurrentValue =
-      React.useCallback2(
-        () => selector(Reductive.Store.getState(storeFromContext)),
+    let source =
+      React.useMemo2(
+        () =>
+          {
+            subscribe: Reductive.Store.subscribe(storeFromContext),
+            getCurrentValue: () =>
+              selector(Reductive.Store.getState(storeFromContext)),
+          },
         (selector, storeFromContext),
       );
 
-    let selectedState = useSubscription(subscribe, getCurrentValue);
+    let selectedState = useSubscription(source);
 
     selectedState;
   };
