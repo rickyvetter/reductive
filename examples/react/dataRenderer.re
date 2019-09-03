@@ -1,6 +1,10 @@
-let component = ReasonReact.statelessComponent("DataRenderer");
+let stateSelector = state => state;
 
-let make = (~state: ThunkedStore.appState, ~dispatch, _children) => {
+[@react.component]
+let make = () => {
+  let state = ThunkedStore.useSelector(stateSelector);
+  let dispatch = ThunkedStore.useDispatch();
+
   let incrementIfOdd =
       (store: Reductive.Store.t(ReduxThunk.thunk(ThunkedStore.appState), ThunkedStore.appState)) =>
     switch (Reductive.Store.getState(store)) {
@@ -8,34 +12,31 @@ let make = (~state: ThunkedStore.appState, ~dispatch, _children) => {
       Reductive.Store.dispatch(store, ThunkedStore.CounterAction(SimpleStore.Increment))
     | _ => ()
     };
-  let incrementAsync = (store) =>
+    let incrementAsync = (store) =>
     ignore(
       Js.Global.setTimeout(
         () => Reductive.Store.dispatch(store, ThunkedStore.CounterAction(SimpleStore.Increment)),
         1000
       )
     );
-  {
-    ...component,
-    render: (_self) =>
-      <div>
-        <div> (ReasonReact.string("string: " ++ state.notACounter)) </div>
-        <div> (ReasonReact.string("counter: " ++ string_of_int(state.counter))) </div>
-        <button onClick=((_) => dispatch(ThunkedStore.CounterAction(SimpleStore.Increment)))>
-          (ReasonReact.string("Increment"))
-        </button>
-        <button onClick=((_) => dispatch(ThunkedStore.CounterAction(SimpleStore.Decrement)))>
-          (ReasonReact.string("Decrement"))
-        </button>
-        <button onClick=((_) => dispatch(ThunkedStore.StringAction(ThunkedStore.A)))>
-          (ReasonReact.string("add a"))
-        </button>
-        <button onClick=((_) => dispatch(ReduxThunk.Thunk(incrementAsync)))>
-          (ReasonReact.string("Increment Async"))
-        </button>
-        <button onClick=((_) => dispatch(ReduxThunk.Thunk(incrementIfOdd)))>
-          (ReasonReact.string("Increment if Odd"))
-        </button>
-      </div>
-  }
+
+    <div>
+      <div> (ReasonReact.string("string: " ++ state.notACounter)) </div>
+      <div> (ReasonReact.string("counter: " ++ string_of_int(state.counter))) </div>
+      <button onClick=((_) => dispatch(ThunkedStore.CounterAction(SimpleStore.Increment)))>
+        (ReasonReact.string("Increment"))
+      </button>
+      <button onClick=((_) => dispatch(ThunkedStore.CounterAction(SimpleStore.Decrement)))>
+        (ReasonReact.string("Decrement"))
+      </button>
+      <button onClick=((_) => dispatch(ThunkedStore.StringAction(ThunkedStore.A)))>
+        (ReasonReact.string("add a"))
+      </button>
+      <button onClick=((_) => dispatch(ReduxThunk.Thunk(incrementAsync)))>
+        (ReasonReact.string("Increment Async"))
+      </button>
+      <button onClick=((_) => dispatch(ReduxThunk.Thunk(incrementIfOdd)))>
+        (ReasonReact.string("Increment if Odd"))
+      </button>
+    </div>;
 };

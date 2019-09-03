@@ -7,3 +7,4 @@
 npm-debug.log
 /_build/
 package-lock.json
+.bsb.lock

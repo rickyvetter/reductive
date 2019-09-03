@@ -1,16 +1,38 @@
 {
   "name": "reductive",
   "refmt": 3,
-  "bsc-flags": ["-bs-super-errors"],
-  "reason": {"react-jsx" : 2},
-  "bs-dependencies": ["reason-react"],
-  "bs-dev-dependencies": ["immutable-re"],
+  "bsc-flags": [
+    "-bs-super-errors"
+  ],
+  "reason": {
+    "react-jsx": 2
+  },
+  "bs-dependencies": [
+    "reason-react"
+  ],
+  "bs-dev-dependencies": [
+    "immutable-re",
+    "@glennsl/bs-jest",
+    "bs-react-testing-library",
+    "reason-hooks-testing-library"
+  ],
   "sources": [
     "src",
     {
       "dir": "examples",
-      "subdirs": ["basic", "react", "immutable", "render", "todomvc"],
-      "type" : "dev"
+      "subdirs": [
+        "basic",
+        "react",
+        "immutable",
+        "render",
+        "render-v2",
+        "todomvc"
+      ],
+      "type": "dev"
+    },
+    {
+      "dir": "__tests__",
+      "type": "dev"
     }
   ]
 }

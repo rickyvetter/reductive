@@ -1,3 +1,4 @@
+[@bs.config {jsx: 3}];
 open SimpleStore;
 
 type stringAction =
@@ -28,10 +29,17 @@ let appReducer = (state, action) =>
 
 let thunkedLogger = (store, next) => Middleware.thunk(store) @@ Middleware.logger(store) @@ next;
 
-let store =
+let appStore =
   Reductive.Store.create(
     ~reducer=appReducer,
     ~preloadedState={counter: 0, notACounter: ""},
     ~enhancer=thunkedLogger,
-    ()
+    (),
   );
+
+include ReductiveContext.Make({
+  type state = appState;
+  type action = ReduxThunk.thunk(appState);
+
+  let store = appStore;
+});
