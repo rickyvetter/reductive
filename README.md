@@ -5,11 +5,30 @@ state container for [Reason](https://github.com/facebook/reason) applications.
 Its scope goes beyond that of managing state for a single component, and
 concerns the application as a whole.
 
-## Word of Caution
+## Hooks
 
-**[You might not need this library](https://medium.com/@dan_abramov/you-might-not-need-redux-be46360cf367)**, especially so in a language which provides good enough construction blocks out of the box. **ReasonReact [already comes with reducers](https://reasonml.github.io/reason-react/blog/2017/09/01/reducers.html)**!
+`ReasonReact` version 0.7.0 has added [support](https://reasonml.github.io/reason-react/blog/2019/04/10/react-hooks) for react hooks and `reductive` now includes a set of hooks to subscribe to the store and dispatch actions. With the new hooks there is no need to use `Lense`s that wrap components, which results in simpler and cleaner code with a flat component tree.
 
-However, in the spirit of unifying the Reason community around an authoritative Redux implementation and to avoid churn, we'll polish Reductive to make it production-ready for those who do wish to use it anyway.
+The good ol' `Lense` is still available, since there is support for the old `jsx` and reducer style components, but is considered to be deprecated, since the old `jsx` syntax is also marked as [deprecated](https://reasonml.github.io/reason-react/docs/en/jsx-2). The preferred way of using `reductive` is via the new hooks API.
+
+### Requirements
+
+The new hooks API is built on top of the existing `react` hooks. In order to use hooks in `ReasonReact`, you have to use the [new jsx](https://reasonml.github.io/reason-react/blog/2019/04/10/react-hooks) syntax for `ReasonReact` components and `^5.0.4` or `^6.0.1` of `bs-platform`.
+
+New projects will use the latest `jsx` version at the [application level](https://reasonml.github.io/reason-react/docs/en/jsx#application-level) by specifying `"react-jsx": 3` in `bsconfig.json`, which allows to use hooks. Existing projects can be gradually converted using `[@bs.config {jsx: 3}]` to enable the new version at the [file level](https://reasonml.github.io/reason-react/docs/en/jsx#file-level).
+
+### useSelector
+
+### useDispatch
+
+## Use case
+
+For simpler use cases, it might be sufficient with the [`useReducer`](https://reactjs.org/docs/hooks-reference.html#usereducer) hook to manage state on a component level, or combining this approach with react [context](https://reactjs.org/docs/context.html) to allow components deeper in the tree receive updates from the global state via `useContext` hook.
+
+The latter approach, however, doesn't allow to subscribe to only part of the global state, resulting in all subscribed components re-render any time something in the state changes (even if they are not interested in particular updates). This is a known issue and happens since there is no bail-out mechanism inside `useContext`,
+see [long github thread](https://github.com/facebook/react/issues/14110) for a really deep insight.
+
+This might not be a problem for many applications, or might become a one for the others. `reductive` exposes `useSelector` hook, that makes sure only the components interested in a particular update are re-rendered, and not the rest.
 
 ## Requirements
 
