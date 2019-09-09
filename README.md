@@ -7,23 +7,84 @@ concerns the application as a whole.
 
 ## Hooks
 
-`ReasonReact` version 0.7.0 has added [support](https://reasonml.github.io/reason-react/blog/2019/04/10/react-hooks) for react hooks and `reductive` now includes a set of hooks to subscribe to the store and dispatch actions. With the new hooks there is no need to use `Lense`s that wrap components, which results in simpler and cleaner code with a flat component tree.
+`ReasonReact` version 0.7.0 has added [support](https://reasonml.github.io/reason-react/blog/2019/04/10/react-hooks) for react hooks and `reductive` now includes a set of hooks to subscribe to the store and dispatch actions. With the new hooks there is no need to use `Lense`s that wrap components, which results in simpler and cleaner code with a flat component tree. Moreover, the new hooks API is [safe to use in concurrent mode](https://github.com/facebook/react/tree/master/packages/use-subscription#use-subscription).
 
-The good ol' `Lense` is still available, since there is support for the old `jsx` and reducer style components, but is considered to be deprecated, since the old `jsx` syntax is also marked as [deprecated](https://reasonml.github.io/reason-react/docs/en/jsx-2). The preferred way of using `reductive` is via the new hooks API.
+The `Lense` API is still available, since there is support for the old `jsx` and reducer style components, but can be considered deprecated, since the old `jsx` syntax is also marked as [deprecated](https://reasonml.github.io/reason-react/docs/en/jsx-2) in the `reason-react` docs. The preferred way of using `reductive` is via the new hooks API.
 
 ### Requirements
 
 The new hooks API is built on top of the existing `react` hooks. In order to use hooks in `ReasonReact`, you have to use the [new jsx](https://reasonml.github.io/reason-react/blog/2019/04/10/react-hooks) syntax for `ReasonReact` components and `^5.0.4` or `^6.0.1` of `bs-platform`.
 
-New projects will use the latest `jsx` version at the [application level](https://reasonml.github.io/reason-react/docs/en/jsx#application-level) by specifying `"react-jsx": 3` in `bsconfig.json`, which allows to use hooks. Existing projects can be gradually converted using `[@bs.config {jsx: 3}]` to enable the new version at the [file level](https://reasonml.github.io/reason-react/docs/en/jsx#file-level).
+New projects will use the latest `jsx` version by default at the [application level](https://reasonml.github.io/reason-react/docs/en/jsx#application-level) by having `"react-jsx": 3` in `bsconfig.json`. Existing projects can be gradually converted using `[@bs.config {jsx: 3}]` to enable the new version at the [file level](https://reasonml.github.io/reason-react/docs/en/jsx#file-level).
+
+### Provider
 
 ### useSelector
+
+Subscribes to changes to a selected portion of the store state, specified by a selector function. The selector function accepts the whole store state and runs whenever an action is dispatched or the component renders (for some other reason than store updates).
+
+`useSelector` is built on top of the [`useSubscription`](https://github.com/facebook/react/tree/master/packages/use-subscription) hook, which is [safe to use](https://github.com/facebook/react/tree/master/packages/use-subscription#limitations-in-concurrent-mode) in the concurrent mode.
+
+#### Selector function
+
+The selector function is required to have a **stable reference** in order to avoid infinite re-renders. The easiest to achieve this is to declare it outside of the component,
+
+```reason
+// declare selector outside of the component
+let userSelector = state => state.user;
+
+// in the component
+let user = AppStore.useSelector(selector);
+```
+
+or memoize with `useCallback` if it depends on `props`, `state` or anything else accessible only inside of the component:
+
+```reason
+[@react.component]
+let make = (~id) => {
+  let productSelector =
+    React.useCallback1(
+      state => state.products->Belt.List.keep(p => p.id === id),
+      [|id|],
+    );
+  let product = AppStore.useSelector(productSelector);
+  ...
+};
+```
+
+#### Re-renders
+
+`useSelector` relies on `useState` under the hood and therefore allows to bail-out of re-render similar to how `useState` [works](https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update), which will compare by value for primitive types, and by reference for objects.
+
+If the selector function returns an object, it won't cause a re-render only if the new object has the same **reference** as the previous one, and returning a new object every time will **always** cause a re-render. For example,
+
+```reason
+let selector = state => {email: state.user.email, cart: state.shop.cart};
+
+// in the component
+let selectedState = AppStore.useSelector(selector);
+```
+
+will cause the component to re-render every time an action is dispatched, regardless of whether `user` or `shop` have changed, since running the selector function will create a new object every time it is called. To prevent those re-renders, it is recommended to have multiple calls to `useSelector`, one per each individual field:
+
+```reason
+let emailSelector = state => state.user.email;
+let cartSelector = state => cart: state.shop.cart;
+
+// in the component
+let email = AppStore.useSelector(emailSelector);
+let cart = AppStore.useSelector(cartSelector);
+```
+
+This helps to make sure the component re-renders only when either `email` or `cart` on the store state changes.
+
+This is different from how `mapStateToProps`, if you are used to dealing with the traditional `redux` flow, since `mapStateToProps` will compare individual fields of the returned object.
 
 ### useDispatch
 
 ## Use case
 
-For simpler use cases, it might be sufficient with the [`useReducer`](https://reactjs.org/docs/hooks-reference.html#usereducer) hook to manage state on a component level, or combining this approach with react [context](https://reactjs.org/docs/context.html) to allow components deeper in the tree receive updates from the global state via `useContext` hook.
+For simpler use cases, it might be sufficient with the [`useReducer`](https://reactjs.org/docs/hooks-reference.html#usereducer) hook to manage state on a component level, or combining this approach with react [context](https://reactjs.org/docs/context.html) to allow components deeper in the tree receive updates via `useContext` hook.
 
 The latter approach, however, doesn't allow to subscribe to only part of the global state, resulting in all subscribed components re-render any time something in the state changes (even if they are not interested in particular updates). This is a known issue and happens since there is no bail-out mechanism inside `useContext`,
 see [long github thread](https://github.com/facebook/react/issues/14110) for a really deep insight.
