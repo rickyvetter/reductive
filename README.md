@@ -17,7 +17,52 @@ The new hooks API is built on top of the existing `react` hooks. In order to use
 
 New projects will use the latest `jsx` version by default at the [application level](https://reasonml.github.io/reason-react/docs/en/jsx#application-level) by having `"react-jsx": 3` in `bsconfig.json`. Existing projects can be gradually converted using `[@bs.config {jsx: 3}]` to enable the new version at the [file level](https://reasonml.github.io/reason-react/docs/en/jsx#file-level).
 
-### Provider
+### Setup store and context provider
+
+The new hooks API makes use of react `context` to make the store available to all nested components. You will need to create a store, implement a module with your application's context provider and hooks, and render the provider at the top of the component tree.
+
+First, define the state and action types and reducer for your application, and create a store:
+
+```reason
+type appState = { counter: int };
+type appAction =
+  | Increment
+  | Decrement;
+
+let appReducer = (state, action) => ...;
+let appStore =
+  Reductive.Store.create(
+    ~reducer=appReducer,
+    ~preloadedState={counter: 0},
+    (),
+  );
+```
+
+Then create a customized version of the context and hooks for your application:
+
+```reason
+module AppStore = {
+  include ReductiveContext.Make({
+    type action = appAction;
+    type state = appState;
+
+    let store = appStore;
+  });
+};
+```
+
+This will create a "typed" version of the store context and hooks with the `action` and `state` types specific to your application. If you are curious, `ReductiveContext.Make` is called a [functor](https://reasonml.github.io/docs/en/module#module-functions-functors), which is a module that acts as a function, and can be used to make custom versions of a module for different data structures.
+
+Finally, use the provider from `AppStore` when rendering your root component:
+
+```reason
+ReactDOMRe.renderToElementWithId(
+  <AppStore.Provider> <Root /> </AppStore.Provider>,
+  "root",
+);
+```
+
+From now on you will access the hooks from your `AppStore` module, like `AppStore.useSelector` and `AppStore.useDispatch`.
 
 ### useSelector
 
