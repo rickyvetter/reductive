@@ -5,6 +5,20 @@ state container for [Reason](https://github.com/facebook/reason) applications.
 Its scope goes beyond that of managing state for a single component, and
 concerns the application as a whole.
 
+## Installation
+
+Install via:
+
+```shell
+$ npm install --save reductive
+```
+
+and add it to `bsconfig.json`:
+
+```sh
+"bs-dependencies": ["reductive"]
+```
+
 ## Hooks
 
 `ReasonReact` version 0.7.0 has added [support](https://reasonml.github.io/reason-react/blog/2019/04/10/react-hooks) for react hooks and `reductive` now includes a set of hooks to subscribe to the store and dispatch actions. With the new hooks there is no need to use `Lense`s that wrap components, which results in simpler and cleaner code with a flat component tree. Moreover, the new hooks API is [safe to use in concurrent mode](https://github.com/facebook/react/tree/master/packages/use-subscription#use-subscription).
@@ -19,7 +33,8 @@ New projects will use the latest `jsx` version by default at the [application le
 
 ### Setup store and context provider
 
-The new hooks API makes use of react `context` to make the store available to all nested components. You will need to create a store, implement a module with your application's context provider and hooks, and render the provider at the top of the component tree.
+The new hooks API makes use of react `context` to make the store available to all nested components. You will need to create a store, implement a module with
+context provider and hooks, and render the provider at the top of the component tree.
 
 First, define the state and action types and reducer for your application, and create a store:
 
@@ -127,11 +142,19 @@ This is different from how `mapStateToProps`, if you are used to dealing with th
 
 ### useDispatch
 
+Returns the dispatch function from the store:
+
+```reason
+let dispatch = AppStore.useDispatch();
+...
+dispatch(Increment);
+```
+
 ## Use case
 
 For simpler use cases, it might be sufficient with the [`useReducer`](https://reactjs.org/docs/hooks-reference.html#usereducer) hook to manage state on a component level, or combining this approach with react [context](https://reactjs.org/docs/context.html) to allow components deeper in the tree receive updates via `useContext` hook.
 
-The latter approach, however, doesn't allow to subscribe to only part of the global state, resulting in all subscribed components re-render any time something in the state changes (even if they are not interested in particular updates). This is a known issue and happens since there is no bail-out mechanism inside `useContext`,
+The latter approach, however, doesn't allow to subscribe to only part of the global state, resulting in all subscribed components re-render any time something in the state changes (even if they are not interested in particular updates). This is a known issue and occurs since there is no bail-out mechanism inside `useContext`,
 see [long github thread](https://github.com/facebook/react/issues/14110) for a really deep insight.
 
 This might not be a problem for many applications, or might become a one for the others. `reductive` exposes `useSelector` hook, that makes sure only the components interested in a particular update are re-rendered, and not the rest.
@@ -140,23 +163,15 @@ This might not be a problem for many applications, or might become a one for the
 
 A recent release of [Node](https://nodejs.org/en/) LTS should be sufficient.
 
-## Installation
-
-Installation of this module can be achieved using the `npm` command like so:
-
-```shell
-$ npm install reasonml-community/reductive
-```
-
 ## Examples
 
 See the `examples` directory for several working examples using reductive. The
 `basic` example is console logging only. The `immutable` example may be broken
 due to an API incompatibility. The `render` example demonstrates the
-effectiveness of the `Lens`, in that only the components whose state has changed
-will be re-rendered; turn on the "highlight updates" option in React Devtools to
-see the effect. The `todomvc` example shows the use of reducer components along
-with reductive. While the todomvc example looks a lot like those of the [todomvc
+effectiveness of the hooks, in that only the components whose state has changed
+will be re-rendered; turn on the "highlight updates" option in React DevTools to
+see the effect. The `todomvc` example shows the use of `useReducer` along
+with `reductive`. While the todomvc example looks a lot like those of the [todomvc
 project](http://todomvc.com/), it does not conform to the todomvc application
 specification, instead focusing on demonstrating the usefulness of reductive.
 
