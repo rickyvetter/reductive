@@ -5,6 +5,15 @@ state container for [Reason](https://github.com/facebook/reason) applications.
 Its scope goes beyond that of managing state for a single component, and
 concerns the application as a whole.
 
+## Use case
+
+For simpler use cases, it might be sufficient with the [`useReducer`](https://reactjs.org/docs/hooks-reference.html#usereducer) hook to manage state on a component level, or combining this approach with react [context](https://reactjs.org/docs/context.html) to allow components deeper in the tree receive updates via `useContext` hook. For more, see [you might not need redux](https://medium.com/@dan_abramov/you-might-not-need-redux-be46360cf367), especially so in a language which provides good enough construction blocks out of the box.
+
+The mentioned approach, however, doesn't allow to subscribe to only part of the global state, resulting in all subscribed components re-render any time something in the state changes (even if they are not interested in particular updates). This is a known issue and occurs since there is no bail-out mechanism inside `useContext`,
+see [long github thread](https://github.com/facebook/react/issues/14110) for a really deep insight.
+
+This might not be a problem for many applications, or might become a one for the others. `reductive` exposes `useSelector` hook, that makes sure only the components interested in a particular update are re-rendered, and not the rest.
+
 ## Installation
 
 Install via:
@@ -23,7 +32,7 @@ and add it to `bsconfig.json`:
 
 `ReasonReact` version 0.7.0 has added [support](https://reasonml.github.io/reason-react/blog/2019/04/10/react-hooks) for react hooks and `reductive` now includes a set of hooks to subscribe to the store and dispatch actions. With the new hooks there is no need to use `Lense`s that wrap components, which results in simpler and cleaner code with a flat component tree. Moreover, the new hooks API is [safe to use in concurrent mode](https://github.com/facebook/react/tree/master/packages/use-subscription#use-subscription).
 
-The `Lense` API is still available, since there is support for the old `jsx` and reducer style components, but can be considered deprecated, since the old `jsx` syntax is also marked as [deprecated](https://reasonml.github.io/reason-react/docs/en/jsx-2) in the `reason-react` docs. The preferred way of using `reductive` is via the new hooks API.
+The `Lense` API is still available, since there is support for the old `jsx` and reducer style components, but is marked as deprecated, since the old `jsx` syntax is also [deprecated](https://reasonml.github.io/reason-react/docs/en/jsx-2) in the `reason-react` docs. The preferred way of using `reductive` is via the new hooks API.
 
 ### Requirements
 
@@ -149,15 +158,6 @@ let dispatch = AppStore.useDispatch();
 ...
 dispatch(Increment);
 ```
-
-## Use case
-
-For simpler use cases, it might be sufficient with the [`useReducer`](https://reactjs.org/docs/hooks-reference.html#usereducer) hook to manage state on a component level, or combining this approach with react [context](https://reactjs.org/docs/context.html) to allow components deeper in the tree receive updates via `useContext` hook.
-
-The latter approach, however, doesn't allow to subscribe to only part of the global state, resulting in all subscribed components re-render any time something in the state changes (even if they are not interested in particular updates). This is a known issue and occurs since there is no bail-out mechanism inside `useContext`,
-see [long github thread](https://github.com/facebook/react/issues/14110) for a really deep insight.
-
-This might not be a problem for many applications, or might become a one for the others. `reductive` exposes `useSelector` hook, that makes sure only the components interested in a particular update are re-rendered, and not the rest.
 
 ## Requirements
 
