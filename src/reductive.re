@@ -41,6 +41,7 @@ module Store = {
   let replaceReducer = (store, reducer) => store.reducer = reducer;
 };
 
+/* deprecated, use hooks API instead */
 module Lense = {
   type state('reductiveState) = {
     reductiveState: option('reductiveState),
@@ -114,6 +115,7 @@ module Lense = {
   };
 };
 
+/* deprecated, use provider from reductiveContext.re */
 module Provider = {
   type state('reductiveState) = Lense.state('reductiveState);
   type action = Lense.action;
