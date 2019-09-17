@@ -24,7 +24,7 @@ module Lense: {
     | UpdateState
     | AddListener(action => unit);
 
-  [@deprecated "Legacy API, Prefer the new hooks API with jsx 3"]
+  [@deprecated "Legacy API, prefer the new hooks API with jsx 3"]
   let createMake:
     (
       ~name: string=?,
@@ -45,7 +45,7 @@ module Provider: {
   type state('reductiveState) = Lense.state('reductiveState);
   type action = Lense.action;
 
-  [@deprecated "Legacy API, Prefer the new hooks API with jsx 3"]
+  [@deprecated "Legacy API, prefer the new hooks API with jsx 3"]
   let createMake:
     (
       ~name: string=?,
