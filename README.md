@@ -77,11 +77,11 @@ module AppStore = {
 
 This will create a "typed" version of the store context and hooks with the `action` and `state` types specific to your application. If you are curious, `ReductiveContext.Make` is called a [functor](https://reasonml.github.io/docs/en/module#module-functions-functors), which is a module that acts as a function, and can be used to make custom versions of a module for different data structures.
 
-Finally, use the provider from `AppStore` when rendering your root component:
+Finally, use the provider from `AppStore` when rendering your root component passing in the created `store`:
 
 ```reason
 ReactDOMRe.renderToElementWithId(
-  <AppStore.Provider> <Root /> </AppStore.Provider>,
+  <AppStore.Provider store=appStore> <Root /> </AppStore.Provider>,
   "root",
 );
 ```

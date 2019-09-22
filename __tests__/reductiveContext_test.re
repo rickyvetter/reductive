@@ -42,7 +42,9 @@ module TestStoreContext = {
 module App = {
   [@react.component]
   let make = (~children) => {
-    <TestStoreContext.Provider> children </TestStoreContext.Provider>;
+    <TestStoreContext.Provider store=TestStoreContext.appStore>
+      children
+    </TestStoreContext.Provider>;
   };
 };
 

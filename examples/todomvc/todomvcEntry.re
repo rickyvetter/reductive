@@ -335,6 +335,6 @@ module App = {
 };
 
 ReactDOMRe.renderToElementWithId(
-  <AppStore.Provider> <App /> </AppStore.Provider>,
+  <AppStore.Provider store=appStore> <App /> </AppStore.Provider>,
   "TodoApp",
 );
