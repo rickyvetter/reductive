@@ -31,4 +31,5 @@ module Make:
     };
     let useSelector: (Config.state => 'selectedState) => 'selectedState;
     let useDispatch: (unit, Config.action) => unit;
+    let useStore: unit => Reductive.Store.t(Config.action, Config.state);
   };

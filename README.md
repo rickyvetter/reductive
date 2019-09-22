@@ -94,6 +94,11 @@ Subscribes to changes to a selected portion of the store state, specified by a s
 
 `useSelector` is built on top of the [`useSubscription`](https://github.com/facebook/react/tree/master/packages/use-subscription) hook, which is [safe to use](https://github.com/facebook/react/tree/master/packages/use-subscription#limitations-in-concurrent-mode) in the concurrent mode.
 
+### useStore
+This hook returns a reference to the store that was passed in to the `<Provider>` component.
+
+This hook should probably not be used frequently. Prefer `useSelector()` as your primary choice. However, this may be useful for less common scenarios that do require access to the store, such as replacing reducers.
+
 #### Selector function
 
 The selector function is required to have a **stable reference** in order to avoid infinite re-renders. The easiest to achieve this is to declare it outside of the component,

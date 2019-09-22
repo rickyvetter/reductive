@@ -54,7 +54,7 @@ type spyReturnMockValue = string;
 let getResult = container =>
   container->Testing.Result.result->Testing.Result.current;
 
-describe("useSelector", () => {
+describe("reductiveContext", () => {
   open Testing;
   open ReactTestingLibrary;
 
@@ -63,180 +63,216 @@ describe("useSelector", () => {
     Reductive.Store.dispatch(TestStoreContext.appStore, Reset)
   );
 
-  test("sets initial state correctly", () => {
-    let selector = (state: TestStoreContext.testState) => state.counter;
+  describe("useSelector", () => {
+    test("sets initial state correctly", () => {
+      let selector = (state: TestStoreContext.testState) => state.counter;
 
-    let container =
-      renderHook(() => TestStoreContext.useSelector(selector), ~options, ());
-
-    expect(getResult(container)) |> toEqual(0);
-  });
-
-  test("selects the state and re-renders component on store updates", () => {
-    let selector = (state: TestStoreContext.testState) => state.counter;
-
-    let container =
-      renderHook(() => TestStoreContext.useSelector(selector), ~options, ());
-
-    act(() => {
-      Reductive.Store.dispatch(TestStoreContext.appStore, Increment);
-      ();
-    });
-
-    expect(getResult(container)) |> toEqual(1);
-  });
-
-  test("always gives back the latest state", () => {
-    let selector = (state: TestStoreContext.testState) => state.counter;
-    let renderedStates: ref(array(int)) = ref([||]);
-
-    module Comp = {
-      [@react.component]
-      let make = () => {
-        let counter = TestStoreContext.useSelector(selector);
-        renderedStates := Belt.Array.concat(renderedStates^, [|counter|]);
-        <div />;
-      };
-    };
-
-    let element = <App> <Comp /> </App>;
-    render(element) |> ignore;
-
-    act(() => {
-      Reductive.Store.dispatch(TestStoreContext.appStore, Increment);
-      Reductive.Store.dispatch(TestStoreContext.appStore, Decrement);
-      ();
-    });
-
-    expect(renderedStates^) |> toEqual([|0, 1, 0|]);
-  });
-
-  test("prevents re-render if selected state is referentially equal", () => {
-    let renderedStates: ref(array(int)) = ref([||]);
-    let selector = (state: TestStoreContext.testState) => state.counter;
-
-    module Comp = {
-      [@react.component]
-      let make = () => {
-        let counter = TestStoreContext.useSelector(selector);
-        renderedStates := Belt.Array.concat(renderedStates^, [|counter|]);
-        <div />;
-      };
-    };
-
-    let element = <App> <Comp /> </App>;
-    render(element) |> ignore;
-
-    act(() => {
-      Reductive.Store.dispatch(TestStoreContext.appStore, AppendA);
-      Reductive.Store.dispatch(TestStoreContext.appStore, AppendB);
-      ();
-    });
-
-    expect(renderedStates^) |> toEqual([|0|]);
-  });
-
-  test("correctly updates selected state if selector depends on props", () => {
-    let renderedStates: ref(array(int)) = ref([||]);
-
-    module Comp = {
-      [@react.component]
-      let make = (~prop) => {
-        let selector =
-          React.useCallback1(
-            (s: TestStoreContext.testState) => s.counter + prop,
-            [|prop|],
-          );
-
-        let counter = TestStoreContext.useSelector(selector);
-
-        renderedStates := Belt.Array.concat(renderedStates^, [|counter|]);
-        <div />;
-      };
-    };
-
-    let updateProp = ref(() => ());
-    module Parent = {
-      [@react.component]
-      let make = () => {
-        let (prop, dispatch) = React.useReducer((s, _) => s + 1, 0);
-        updateProp := dispatch;
-        <Comp prop />;
-      };
-    };
-    let element = <App> <Parent /> </App>;
-
-    render(element) |> ignore;
-
-    act(() => {
-      Reductive.Store.dispatch(TestStoreContext.appStore, Increment); // state.counter - 1, prop - 0, total - 1
-      updateProp^(); // state.counter - 1, prop - 1, total - 2
-      Reductive.Store.dispatch(TestStoreContext.appStore, Increment); // state.counter - 2, prop - 1, total - 3
-      updateProp^(); // state.counter - 2, prop - 2, total - 4
-      Reductive.Store.dispatch(TestStoreContext.appStore, Increment); // state.counter - 3, prop - 2, total - 5
-      ();
-    });
-
-    // changing selector function that depends on props leads to double re-render and duplicated state values
-    let distinctRenderState =
-      (renderedStates^)
-      ->Belt.Array.keepWithIndex((value, index) =>
-          (renderedStates^)
-          ->Belt.Array.getIndexBy(v => v === value)
-          ->Belt.Option.getWithDefault(-1)
-          === index
+      let container =
+        renderHook(
+          () => TestStoreContext.useSelector(selector),
+          ~options,
+          (),
         );
-    expect(distinctRenderState) |> toEqual([|0, 1, 2, 3, 4, 5|]);
-  });
 
-  test("removes subscription on unmount", () => {
-    let setupSpy: selectorMockTest => spyReturnMockValue = [%bs.raw
-      {|
+      expect(getResult(container)) |> toEqual(0);
+    });
+
+    test("selects the state and re-renders component on store updates", () => {
+      let selector = (state: TestStoreContext.testState) => state.counter;
+
+      let container =
+        renderHook(
+          () => TestStoreContext.useSelector(selector),
+          ~options,
+          (),
+        );
+
+      act(() => {
+        Reductive.Store.dispatch(TestStoreContext.appStore, Increment);
+        ();
+      });
+
+      expect(getResult(container)) |> toEqual(1);
+    });
+
+    test("always gives back the latest state", () => {
+      let selector = (state: TestStoreContext.testState) => state.counter;
+      let renderedStates: ref(array(int)) = ref([||]);
+
+      module Comp = {
+        [@react.component]
+        let make = () => {
+          let counter = TestStoreContext.useSelector(selector);
+          renderedStates := Belt.Array.concat(renderedStates^, [|counter|]);
+          <div />;
+        };
+      };
+
+      let element = <App> <Comp /> </App>;
+      render(element) |> ignore;
+
+      act(() => {
+        Reductive.Store.dispatch(TestStoreContext.appStore, Increment);
+        Reductive.Store.dispatch(TestStoreContext.appStore, Decrement);
+        ();
+      });
+
+      expect(renderedStates^) |> toEqual([|0, 1, 0|]);
+    });
+
+    test("prevents re-render if selected state is referentially equal", () => {
+      let renderedStates: ref(array(int)) = ref([||]);
+      let selector = (state: TestStoreContext.testState) => state.counter;
+
+      module Comp = {
+        [@react.component]
+        let make = () => {
+          let counter = TestStoreContext.useSelector(selector);
+          renderedStates := Belt.Array.concat(renderedStates^, [|counter|]);
+          <div />;
+        };
+      };
+
+      let element = <App> <Comp /> </App>;
+      render(element) |> ignore;
+
+      act(() => {
+        Reductive.Store.dispatch(TestStoreContext.appStore, AppendA);
+        Reductive.Store.dispatch(TestStoreContext.appStore, AppendB);
+        ();
+      });
+
+      expect(renderedStates^) |> toEqual([|0|]);
+    });
+
+    test("correctly updates selected state if selector depends on props", () => {
+      let renderedStates: ref(array(int)) = ref([||]);
+
+      module Comp = {
+        [@react.component]
+        let make = (~prop) => {
+          let selector =
+            React.useCallback1(
+              (s: TestStoreContext.testState) => s.counter + prop,
+              [|prop|],
+            );
+
+          let counter = TestStoreContext.useSelector(selector);
+
+          renderedStates := Belt.Array.concat(renderedStates^, [|counter|]);
+          <div />;
+        };
+      };
+
+      let updateProp = ref(() => ());
+      module Parent = {
+        [@react.component]
+        let make = () => {
+          let (prop, dispatch) = React.useReducer((s, _) => s + 1, 0);
+          updateProp := dispatch;
+          <Comp prop />;
+        };
+      };
+      let element = <App> <Parent /> </App>;
+
+      render(element) |> ignore;
+
+      act(() => {
+        Reductive.Store.dispatch(TestStoreContext.appStore, Increment); // state.counter - 1, prop - 0, total - 1
+        updateProp^(); // state.counter - 1, prop - 1, total - 2
+        Reductive.Store.dispatch(TestStoreContext.appStore, Increment); // state.counter - 2, prop - 1, total - 3
+        updateProp^(); // state.counter - 2, prop - 2, total - 4
+        Reductive.Store.dispatch(TestStoreContext.appStore, Increment); // state.counter - 3, prop - 2, total - 5
+        ();
+      });
+
+      // changing selector function that depends on props leads to double re-render and duplicated state values
+      let distinctRenderState =
+        (renderedStates^)
+        ->Belt.Array.keepWithIndex((value, index) =>
+            (renderedStates^)
+            ->Belt.Array.getIndexBy(v => v === value)
+            ->Belt.Option.getWithDefault(-1)
+            === index
+          );
+      expect(distinctRenderState) |> toEqual([|0, 1, 2, 3, 4, 5|]);
+    });
+
+    test("removes subscription on unmount", () => {
+      let setupSpy: selectorMockTest => spyReturnMockValue = [%bs.raw
+        {|
        function (obj) {
          return jest.spyOn(obj, "selector");
        }
      |}
-    ];
+      ];
 
-    let selector = (state: TestStoreContext.testState) => state.counter;
-    let selectorSpyObject = ref({"selector": selector});
+      let selector = (state: TestStoreContext.testState) => state.counter;
+      let selectorSpyObject = ref({"selector": selector});
 
-    let selectStateFromSpy = state => {
-      let spySelector = (selectorSpyObject^)##selector;
-      spySelector(state);
-    };
-
-    module Comp = {
-      [@react.component]
-      let make = () => {
-        let _ = TestStoreContext.useSelector(selectStateFromSpy);
-        <div />;
+      let selectStateFromSpy = state => {
+        let spySelector = (selectorSpyObject^)##selector;
+        spySelector(state);
       };
-    };
 
-    let element = <App> <Comp /> </App>;
-    render(element) |> unmount() |> ignore;
+      module Comp = {
+        [@react.component]
+        let make = () => {
+          let _ = TestStoreContext.useSelector(selectStateFromSpy);
+          <div />;
+        };
+      };
 
-    // start spying after unmount
-    let spy = setupSpy(selectorSpyObject^);
+      let element = <App> <Comp /> </App>;
+      render(element) |> unmount() |> ignore;
 
-    act(() => {
-      Reductive.Store.dispatch(TestStoreContext.appStore, Increment);
-      Reductive.Store.dispatch(TestStoreContext.appStore, Decrement);
-      Reductive.Store.dispatch(TestStoreContext.appStore, Increment);
-      ();
-    });
+      // start spying after unmount
+      let spy = setupSpy(selectorSpyObject^);
 
-    let expectSelectorToHaveBeenCalled: spyReturnMockValue => unit = [%bs.raw
-      {|
+      act(() => {
+        Reductive.Store.dispatch(TestStoreContext.appStore, Increment);
+        Reductive.Store.dispatch(TestStoreContext.appStore, Decrement);
+        Reductive.Store.dispatch(TestStoreContext.appStore, Increment);
+        ();
+      });
+
+      let expectSelectorToHaveBeenCalled: spyReturnMockValue => unit = [%bs.raw
+        {|
          function (spy) {
            console.log(spy)
            return expect(spy).toHaveBeenCalledTimes(0)
          }
        |}
-    ];
+      ];
 
-    expectSelectorToHaveBeenCalled(spy);
-    expect(true) |> toEqual(true);
+      expectSelectorToHaveBeenCalled(spy);
+      expect(true) |> toEqual(true);
+    });
+  });
+
+  describe("useStore", () => {
+    test("gets the store", () => {
+      let container =
+        renderHook(() => TestStoreContext.useStore(), ~options, ());
+
+      expect(getResult(container)) |> toEqual(TestStoreContext.appStore);
+    });
+
+    test("re-renders component on store updates", () => {
+      let container =
+        renderHook(
+          () => TestStoreContext.useStore(),
+          ~options,
+          (),
+        );
+
+      act(() => {
+        Reductive.Store.dispatch(TestStoreContext.appStore, Increment);
+        ();
+      });
+
+      let state = container->getResult->Reductive.Store.getState;
+      expect(state.counter) |> toEqual(1);
+    });
   });
 });

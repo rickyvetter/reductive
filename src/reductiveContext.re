@@ -62,5 +62,20 @@ module Make = (Config: Config) => {
   let useDispatch = () => {
     Reductive.Store.dispatch(getStoreFromContext());
   };
+
+  let useStore = () => {
+    let store = getStoreFromContext();
+
+    let source =
+      React.useMemo1(
+        () =>
+          {
+            subscribe: Reductive.Store.subscribe(store),
+            getCurrentValue: () => store,
+          },
+        [|store|],
+      );
+
+    useSubscription(source);
   };
 };
