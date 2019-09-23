@@ -30,26 +30,26 @@ module Make = (Config: Config) => {
     };
   };
 
-  let getStoreFromContext = () => {
-    switch (React.useContext(storeContext)) {
+  let useStore = () => {
+    let storeFromContext = React.useContext(storeContext);
+    switch (storeFromContext) {
     | None =>
       failwith(
         "could not find reactive context value; please ensure the component is wrapped in a <Provider>",
       )
-    | Some(storeContext) => storeContext
+    | Some(store) => store
     };
   };
 
   let useSelector = selector => {
-    let store = getStoreFromContext();
+    let store = useStore();
 
     let source =
       React.useMemo2(
         () =>
           {
             subscribe: Reductive.Store.subscribe(store),
-            getCurrentValue: () =>
-              selector(Reductive.Store.getState(store)),
+            getCurrentValue: () => selector(Reductive.Store.getState(store)),
           },
         (selector, store),
       );
@@ -60,22 +60,6 @@ module Make = (Config: Config) => {
   };
 
   let useDispatch = () => {
-    Reductive.Store.dispatch(getStoreFromContext());
-  };
-
-  let useStore = () => {
-    let store = getStoreFromContext();
-
-    let source =
-      React.useMemo1(
-        () =>
-          {
-            subscribe: Reductive.Store.subscribe(store),
-            getCurrentValue: () => store,
-          },
-        [|store|],
-      );
-
-    useSubscription(source);
+    Reductive.Store.dispatch(useStore());
   };
 };
