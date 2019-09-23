@@ -35,7 +35,7 @@ module Make = (Config: Config) => {
     switch (storeFromContext) {
     | None =>
       failwith(
-        "could not find reactive context value; please ensure the component is wrapped in a <Provider>",
+        "Could not find reductive context value; please ensure the component is wrapped in a <Provider>",
       )
     | Some(store) => store
     };
