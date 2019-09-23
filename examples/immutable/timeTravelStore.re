@@ -91,6 +91,4 @@ let timeTravelStore =
 include ReductiveContext.Make({
   type action = ReduxThunk.thunk(AppState.appState);
   type state = AppState.appState;
-
-  let store = timeTravelStore;
 });

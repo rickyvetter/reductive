@@ -63,8 +63,6 @@ module AppStore = {
   include ReductiveContext.Make({
     type state = appState;
     type action = ReduxThunk.thunk(appState);
-
-    let store = appStore;
   });
 };
 

@@ -2,8 +2,6 @@
 module type Config = {
   type state;
   type action;
-
-  let store: Reductive.Store.t(action, state);
 };
 
 module Make = (Config: Config) => {

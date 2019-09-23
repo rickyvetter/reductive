@@ -35,7 +35,6 @@ module TestStoreContext = {
   include ReductiveContext.Make({
     type action = testAction;
     type state = testState;
-    let store = appStore;
   });
 };
 

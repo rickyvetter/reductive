@@ -86,8 +86,6 @@ module AppStore = {
   include ReductiveContext.Make({
     type action = appAction;
     type state = appState;
-
-    let store = appStore;
   });
 };
 
