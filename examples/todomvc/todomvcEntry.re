@@ -86,8 +86,6 @@ module AppStore = {
   include ReductiveContext.Make({
     type action = appAction;
     type state = appState;
-
-    let store = appStore;
   });
 };
 
@@ -335,6 +333,6 @@ module App = {
 };
 
 ReactDOMRe.renderToElementWithId(
-  <AppStore.Provider> <App /> </AppStore.Provider>,
+  <AppStore.Provider store=appStore> <App /> </AppStore.Provider>,
   "TodoApp",
 );

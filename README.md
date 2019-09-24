@@ -77,11 +77,11 @@ module AppStore = {
 
 This will create a "typed" version of the store context and hooks with the `action` and `state` types specific to your application. If you are curious, `ReductiveContext.Make` is called a [functor](https://reasonml.github.io/docs/en/module#module-functions-functors), which is a module that acts as a function, and can be used to make custom versions of a module for different data structures.
 
-Finally, use the provider from `AppStore` when rendering your root component:
+Finally, use the provider from `AppStore` when rendering your root component passing in the created `store`:
 
 ```reason
 ReactDOMRe.renderToElementWithId(
-  <AppStore.Provider> <Root /> </AppStore.Provider>,
+  <AppStore.Provider store=appStore> <Root /> </AppStore.Provider>,
   "root",
 );
 ```
@@ -93,6 +93,11 @@ From now on you will access the hooks from your `AppStore` module, like `AppStor
 Subscribes to changes to a selected portion of the store state, specified by a selector function. The selector function accepts the whole store state and runs whenever an action is dispatched or the component renders (for some other reason than store updates).
 
 `useSelector` is built on top of the [`useSubscription`](https://github.com/facebook/react/tree/master/packages/use-subscription) hook, which is [safe to use](https://github.com/facebook/react/tree/master/packages/use-subscription#limitations-in-concurrent-mode) in the concurrent mode.
+
+### useStore
+This hook returns a reference to the store that was passed in to the `<Provider>` component.
+
+This hook should probably not be used frequently. Prefer `useSelector()` as your primary choice. However, this may be useful for less common scenarios that do require access to the store, such as replacing reducers.
 
 #### Selector function
 

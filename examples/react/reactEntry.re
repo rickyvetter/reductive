@@ -1,5 +1,7 @@
 [@bs.config {jsx: 3}];
 ReactDOMRe.renderToElementWithId(
-  <ThunkedStore.Provider> <DataRenderer /> </ThunkedStore.Provider>,
+  <ThunkedStore.Provider store=ThunkedStore.appStore>
+    <DataRenderer />
+  </ThunkedStore.Provider>,
   "index",
 );
