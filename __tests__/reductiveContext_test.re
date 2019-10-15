@@ -259,11 +259,7 @@ describe("reductiveContext", () => {
 
     test("re-renders component on store updates", () => {
       let container =
-        renderHook(
-          () => TestStoreContext.useStore(),
-          ~options,
-          (),
-        );
+        renderHook(() => TestStoreContext.useStore(), ~options, ());
 
       act(() => {
         Reductive.Store.dispatch(TestStoreContext.appStore, Increment);
@@ -274,4 +270,40 @@ describe("reductiveContext", () => {
       expect(state.counter) |> toEqual(1);
     });
   });
+
+  describe("useDispatch", () =>
+    test("has stable reference", () => {
+      let dispatchRerenders: ref(int) = ref(0);
+      let forceRender = ref(() => ());
+
+      module Comp = {
+        [@react.component]
+        let make = () => {
+          let (_, setState) = React.useState(() => 0);
+          forceRender := (() => setState(prev => prev + 1));
+
+          let dispatch = TestStoreContext.useDispatch();
+          React.useEffect1(
+            () => {
+              dispatchRerenders := dispatchRerenders^ + 1;
+              None;
+            },
+            [|dispatch|],
+          );
+          <div />;
+        };
+      };
+
+      let element = <App> <Comp /> </App>;
+      render(element) |> ignore;
+
+      act(() => {
+        forceRender^();
+        forceRender^();
+        forceRender^();
+        ();
+      });
+      expect(dispatchRerenders^) |> toEqual(1);
+    })
+  );
 });

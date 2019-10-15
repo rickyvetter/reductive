@@ -58,6 +58,7 @@ module Make = (Config: Config) => {
   };
 
   let useDispatch = () => {
-    Reductive.Store.dispatch(useStore());
+    let store = useStore();
+    React.useCallback1(Reductive.Store.dispatch(store), [|store|]);
   };
 };
