@@ -43,7 +43,7 @@ New projects will use the latest `jsx` version by default at the [application le
 ### Setup store and context provider
 
 The new hooks API makes use of react `context` to make the store available to all nested components. You will need to create a store, implement a module with
-context provider and hooks, and render the provider at the top of the component tree.
+context provider and hooks, and render the provider with the created store at the top of the component tree.
 
 First, define the state and action types and reducer for your application, and create a store:
 
@@ -69,8 +69,6 @@ module AppStore = {
   include ReductiveContext.Make({
     type action = appAction;
     type state = appState;
-
-    let store = appStore;
   });
 };
 ```
@@ -160,6 +158,7 @@ dispatch(Increment);
 ```
 
 ### useStore
+
 This hook returns a reference to the store that was passed in to the `<Provider>` component.
 
 This hook should probably not be used frequently. Prefer `useSelector()` as your primary choice. However, this may be useful for less common scenarios that do require access to the store, such as replacing reducers.
