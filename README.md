@@ -101,7 +101,7 @@ The selector function is required to have a **stable reference** in order to avo
 let userSelector = state => state.user;
 
 // in the component
-let user = AppStore.useSelector(selector);
+let user = AppStore.useSelector(userSelector);
 ```
 
 or memoize with `useCallback` if it depends on `props`, `state` or anything else accessible only inside of the component:
