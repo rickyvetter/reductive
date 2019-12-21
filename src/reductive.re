@@ -135,3 +135,30 @@ let applyMiddleware = _ => ();
 
 let bindActionCreators = (actions, dispatch) =>
   List.map((action, ()) => dispatch(action), actions);
+
+type store('action, 'state) = Store.t('action, 'state);
+type reducer('action, 'state) = ('state, 'action) => 'state;
+
+type middleware('action, 'state) =
+  (store('action, 'state), 'action => unit, 'action) => unit;
+
+type storeCreator('action, 'state) =
+  (
+    ~reducer: reducer('action, 'state),
+    ~preloadedState: 'state,
+    ~enhancer: middleware('action, 'state)=?,
+    unit
+  ) =>
+  store('action, 'state);
+
+type storeEnhancer('action, 'state) =
+  storeCreator('action, 'state) => storeCreator('action, 'state);
+
+type liftedStoreEnhancer('action, 'state, 'enhancedAction, 'enhancedState) =
+  (
+    ~reducer: reducer('action, 'state),
+    ~preloadedState: 'enhancedState,
+    ~enhancer: middleware('enhancedAction, 'enhancedState)=?,
+    unit
+  ) =>
+  store('enhancedAction, 'enhancedState);
