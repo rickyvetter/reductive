@@ -1,5 +1,3 @@
-[@bs.config {jsx: 3}];
-
 [@bs.deriving {jsConverter: newType}]
 type source('a) = {
   subscribe: (unit => unit, unit) => unit,
