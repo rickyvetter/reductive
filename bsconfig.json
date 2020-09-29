@@ -11,7 +11,6 @@
     "reason-react"
   ],
   "bs-dev-dependencies": [
-    "immutable-re",
     "@glennsl/bs-jest",
     "bs-react-testing-library",
     "reason-hooks-testing-library"
@@ -23,7 +22,6 @@
       "subdirs": [
         "basic",
         "react",
-        "immutable",
         "render",
         "render-v2",
         "todomvc"

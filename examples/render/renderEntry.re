@@ -1,4 +1,3 @@
-[@bs.config {jsx: 3}];
 /*
  * Example using multiple components to represent different slices of state.
  * Updating the state exposed by one component should not cause the other
