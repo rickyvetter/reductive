@@ -15,43 +15,6 @@ module Store: {
   let replaceReducer: (t<'action, 'state>, ('state, 'action) => 'state) => unit
 }
 
-module Lense: {
-  type state<'reductiveState>
-  type rec action =
-    | UpdateState
-    | AddListener(action => unit)
-
-  @deprecated("Legacy API, prefer the new hooks API with jsx 3")
-  let createMake: (
-    ~name: string=?,
-    ~lense: 'state => 'lense,
-    Store.t<'action, 'state>,
-    ~component: (
-      ~state: 'lense,
-      ~dispatch: 'action => unit,
-      array<ReasonReact.reactElement>,
-    ) => ReasonReact.component<'a, 'b, 'c>,
-    array<ReasonReact.reactElement>,
-  ) => ReasonReact.component<state<'lense>, ReasonReact.noRetainedProps, action>
-}
-
-module Provider: {
-  type state<'reductiveState> = Lense.state<'reductiveState>
-  type action = Lense.action
-
-  @deprecated("Legacy API, prefer the new hooks API with jsx 3")
-  let createMake: (
-    ~name: string=?,
-    Store.t<'action, 'state>,
-    ~component: (
-      ~state: 'state,
-      ~dispatch: 'action => unit,
-      array<ReasonReact.reactElement>,
-    ) => ReasonReact.component<'a, 'b, 'c>,
-    array<ReasonReact.reactElement>,
-  ) => ReasonReact.component<state<'state>, ReasonReact.noRetainedProps, action>
-}
-
 /* ** These are all visible apis of Redux that aren't needed in Reason.
  * When used, build tools will provide explanation of alternatives.
  */
