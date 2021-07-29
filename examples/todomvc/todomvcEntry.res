@@ -1,4 +1,3 @@
-@@bs.config({jsx: 3})
 @ocaml.doc("
   * Example of a todo list, loosely based on the redux example, mixed with
   * some code from Jared Forsyth's ReasonReact tutorial, and Cheng Lou's

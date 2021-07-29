@@ -1,5 +1,3 @@
-@@bs.config({jsx: 3})
-
 let stateSelector = state => state
 @react.component
 let make = () => {
