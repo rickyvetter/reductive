@@ -97,7 +97,12 @@ module CounterComponent = {
 
 module RenderApp = {
   @react.component
-  let make = () => <div> <CounterComponent /> <StringComponent /> </div>
+  let make = () =>
+    <div>
+      <AppStore.Provider store=appStore>
+        <CounterComponent /> <StringComponent />
+      </AppStore.Provider>
+    </div>
 }
 
 ReactDOM.querySelector("#index")->Belt.Option.forEach(ReactDOM.render(<RenderApp />))
