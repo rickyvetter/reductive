@@ -958,16 +958,6 @@ bs-dom-testing-library@^0.4.1:
   dependencies:
     dom-testing-library "^3.19.0"
 
-bs-platform@^2.2.1:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-2.2.3.tgz#d905ae10a5f3621e6a739041dfa0b58483a2174f"
-  integrity sha1-2QWuEKXzYh5qc5BB36C1hIOiF08=
-
-bs-platform@^5.0.6:
-  version "5.0.6"
-  resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-5.0.6.tgz#88c13041fb020479800de3d82c680bf971091425"
-  integrity sha512-6Boa2VEcWJp2WJr38L7bp3J929nYha7gDarjxb070jWzgfPJ/WbzjipmSfnu2eqqk1MfjEIpBipbPz6n1NISwA==
-
 bs-react-testing-library@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/bs-react-testing-library/-/bs-react-testing-library-0.5.0.tgz#3906666ffc6dfd22ff25ae01bfa8f5ba65c30db0"
@@ -2201,12 +2191,6 @@ ignore-walk@^3.0.1:
   integrity sha512-DTVlMx3IYPe0/JJcYP7Gxg7ttZZu3IInhuEhbchuqneY9wWe5Ojy2mXLBaQFUQmo0AW2r3qG7m1mg86js+gnlQ==
   dependencies:
     minimatch "^3.0.4"
-
-"immutable-re@https://github.com/facebookincubator/immutable-re.git":
-  version "0.0.15"
-  resolved "https://github.com/facebookincubator/immutable-re.git#d55f65f7fc638ac17cfdd8064a0401d4cde5aad2"
-  dependencies:
-    bs-platform "^2.2.1"
 
 import-local@^2.0.0:
   version "2.0.0"
@@ -4174,6 +4158,11 @@ require-main-filename@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/require-main-filename/-/require-main-filename-2.0.0.tgz#d0b329ecc7cc0f61649f62215be69af54aa8989b"
   integrity sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==
+
+rescript@^9.1.4:
+  version "9.1.4"
+  resolved "https://registry.yarnpkg.com/rescript/-/rescript-9.1.4.tgz#1eb126f98d6c16942c0bf0df67c050198e580515"
+  integrity sha512-aXANK4IqecJzdnDpJUsU6pxMViCR5ogAxzuqS0mOr8TloMnzAjJFu63fjD6LCkWrKAhlMkFFzQvVQYaAaVkFXw==
 
 resolve-cwd@^2.0.0:
   version "2.0.0"

@@ -4,9 +4,9 @@
   "description": "Redux in Reason",
   "main": "index.js",
   "scripts": {
-    "build": "bsb -make-world",
-    "start": "bsb -make-world -w",
-    "clean": "bsb -clean-world",
+    "build": "rescript build",
+    "start": "rescript build -w",
+    "clean": "rescript clean",
     "test": "npm run build && jest --silent",
     "webpack": "webpack -w"
   },
@@ -30,13 +30,12 @@
   },
   "devDependencies": {
     "@glennsl/bs-jest": "^0.4.8",
-    "bs-platform": "^5.0.6",
     "bs-react-testing-library": "^0.5.0",
-    "immutable-re": "https://github.com/facebookincubator/immutable-re.git",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "reason-hooks-testing-library": "^0.2.0",
     "reason-react": "^0.7.0",
+    "rescript": "^9.1.4",
     "webpack": "^4.21.0",
     "webpack-cli": "^3.1.2"
   },
