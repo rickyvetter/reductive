@@ -29,35 +29,40 @@ type ReduxThunk.thunk<_> +=
   | TravelBackward
   | TravelForward
 
-let past = ref(Immutable.Stack.empty())
+let past = ref(list{})
 
-let future = ref(Immutable.Stack.empty())
+let future = ref(list{})
 
 let goBack = currentState =>
-  switch Immutable.Stack.first(past.contents) {
+  switch Belt.List.head(past.contents) {
   | Some(lastState) =>
-    future := Immutable.Stack.addFirst(currentState, future.contents)
-    if Immutable.Stack.isNotEmpty(past.contents) {
-      past := Immutable.Stack.removeFirstOrRaise(past.contents)
-    }
+    future := Belt.List.add(future.contents, currentState)
+    past :=
+      switch past.contents {
+      | list{} => list{}
+      | list{_, ...t} => t
+      }
     lastState
   | None => currentState
   }
 
 let goForward = currentState =>
-  switch Immutable.Stack.first(future.contents) {
+  switch Belt.List.head(future.contents) {
   | Some(nextState) =>
-    past := Immutable.Stack.addFirst(currentState, past.contents)
-    if Immutable.Stack.isNotEmpty(future.contents) {
-      future := Immutable.Stack.removeFirstOrRaise(future.contents)
-    }
+    past := Belt.List.add(past.contents, currentState)
+    future :=
+      switch future.contents {
+      | list{} => list{}
+      | list{_, ...t} => t
+      }
+
     nextState
   | None => currentState
   }
 
 let recordHistory = currentState => {
-  past := Immutable.Stack.addFirst(currentState, past.contents)
-  future := Immutable.Stack.empty()
+  past := Belt.List.add(past.contents, currentState)
+  future := list{}
 }
 
 let timeTravel = (store, next, action) => {

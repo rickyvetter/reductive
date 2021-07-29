@@ -21,28 +21,26 @@ let make = () => {
     )
 
   <div>
-    <div> {ReasonReact.string("string: " ++ state.notACounter)} </div>
-    <div> {ReasonReact.string("counter: " ++ string_of_int(state.counter))} </div>
+    <div> {React.string("string: " ++ state.notACounter)} </div>
+    <div> {React.string("counter: " ++ string_of_int(state.counter))} </div>
     <button onClick={_ => dispatch(TimeTravelStore.CounterAction(SimpleStore.Increment))}>
-      {ReasonReact.string("Increment")}
+      {React.string("Increment")}
     </button>
     <button onClick={_ => dispatch(TimeTravelStore.CounterAction(SimpleStore.Decrement))}>
-      {ReasonReact.string("Decrement")}
+      {React.string("Decrement")}
     </button>
     <button onClick={_ => dispatch(TimeTravelStore.StringAction(TimeTravelStore.A))}>
-      {ReasonReact.string("add a")}
+      {React.string("add a")}
     </button>
     <button onClick={_ => dispatch(ReduxThunk.Thunk(incrementAsync))}>
-      {ReasonReact.string("Increment Async")}
+      {React.string("Increment Async")}
     </button>
     <button onClick={_ => dispatch(ReduxThunk.Thunk(incrementIfOdd))}>
-      {ReasonReact.string("Increment if Odd")}
+      {React.string("Increment if Odd")}
     </button>
     <button onClick={_ => dispatch(TimeTravelStore.TravelBackward)}>
-      {ReasonReact.string("Undo")}
+      {React.string("Undo")}
     </button>
-    <button onClick={_ => dispatch(TimeTravelStore.TravelForward)}>
-      {ReasonReact.string("Redo")}
-    </button>
+    <button onClick={_ => dispatch(TimeTravelStore.TravelForward)}> {React.string("Redo")} </button>
   </div>
 }
