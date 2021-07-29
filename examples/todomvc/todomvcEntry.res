@@ -111,10 +111,10 @@ module TodoItem = {
 
     React.useEffect1(() => {
       Js.log("Inside effect ")
-      let optionRef = editFieldRef->React.Ref.current->Js.Nullable.toOption
+      let optionRef = editFieldRef.current->Js.Nullable.toOption
       switch (state.editing, optionRef) {
       | (true, Some(field)) =>
-        let node = ReactDOMRe.domElementToObj(field)
+        let node = ReactDOM.domElementToObj(field)
         Js.log(node)
 
         ignore(node["focus"]())
@@ -151,11 +151,11 @@ module TodoItem = {
           checked=todo.completed
           onChange={_ => dispatch(ToggleItem(todo.id))}
         />
-        <label onDoubleClick={_ => todoItemDispatch(Edit)}> {ReasonReact.string(todo.text)} </label>
+        <label onDoubleClick={_ => todoItemDispatch(Edit)}> {React.string(todo.text)} </label>
         <button className="destroy" onClick={_ => dispatch(ClearItem(todo.id))} />
       </div>
       <input
-        ref={ReactDOMRe.Ref.domRef(editFieldRef)}
+        ref={ReactDOM.Ref.domRef(editFieldRef)}
         className="edit"
         value=state.editText
         onBlur={_ => submit()}
@@ -185,8 +185,8 @@ module TodoList = {
         onChange={_ => dispatch(ToggleAll(activeTodoCount > 0))}
         checked={todoCount > 0 && activeTodoCount === 0}
       />
-      <label htmlFor="toggle-all"> {ReasonReact.string("Mark all as complete")} </label>
-      <ul className="todo-list"> {ReasonReact.array(Belt.List.toArray(todoItems))} </ul>
+      <label htmlFor="toggle-all"> {React.string("Mark all as complete")} </label>
+      <ul className="todo-list"> {React.array(Belt.List.toArray(todoItems))} </ul>
     </section>
   }
 }
@@ -238,7 +238,7 @@ module FilterLink = {
   @react.component
   let make = (~filter, ~label, ~state: appState, ~dispatch) => {
     let className = filter == state.filter ? "selected" : ""
-    <li> <a className onClick={_ => dispatch(Show(filter))}> {ReasonReact.string(label)} </a> </li>
+    <li> <a className onClick={_ => dispatch(Show(filter))}> {React.string(label)} </a> </li>
   }
 }
 
@@ -251,13 +251,13 @@ module Footer = {
     let clearButton =
       completedCount > 0
         ? <button className="clear-completed" onClick={_ => dispatch(ClearCompleted)}>
-            {ReasonReact.string("Clear completed")}
+            {React.string("Clear completed")}
           </button>
-        : ReasonReact.null
+        : React.null
     <footer className="footer">
       <span className="todo-count">
-        <strong> {ReasonReact.string(string_of_int(activeTodoCount))} </strong>
-        {ReasonReact.string(" " ++ (activeTodoWord ++ " left"))}
+        <strong> {React.string(string_of_int(activeTodoCount))} </strong>
+        {React.string(" " ++ (activeTodoWord ++ " left"))}
       </span>
       <ul className="filters">
         <FilterLink filter=ALL label="All" state dispatch />
@@ -278,16 +278,13 @@ module App = {
     let state = AppStore.useSelector(stateSelector)
 
     <div>
-      <header className="header">
-        <h1> {ReasonReact.string("todos")} </h1> <AddTodo dispatch />
-      </header>
+      <header className="header"> <h1> {React.string("todos")} </h1> <AddTodo dispatch /> </header>
       <VisibleTodoList state dispatch />
       <Footer state dispatch />
     </div>
   }
 }
 
-ReactDOMRe.renderToElementWithId(
-  <AppStore.Provider store=appStore> <App /> </AppStore.Provider>,
-  "TodoApp",
+ReactDOM.querySelector("#index")->Belt.Option.forEach(
+  ReactDOM.render(<AppStore.Provider store=appStore> <App /> </AppStore.Provider>),
 )

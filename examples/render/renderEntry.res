@@ -72,9 +72,9 @@ module StringComponent = {
     let state = AppStore.useSelector(contentSelector)
 
     <div>
-      <div> {ReasonReact.string("Content: " ++ state)} </div>
-      <button onClick={_ => dispatch(StringAction(AppendA))}> {ReasonReact.string("+A")} </button>
-      <button onClick={_ => dispatch(StringAction(AppendB))}> {ReasonReact.string("+B")} </button>
+      <div> {React.string("Content: " ++ state)} </div>
+      <button onClick={_ => dispatch(StringAction(AppendA))}> {React.string("+A")} </button>
+      <button onClick={_ => dispatch(StringAction(AppendB))}> {React.string("+B")} </button>
     </div>
   }
 }
@@ -88,13 +88,9 @@ module CounterComponent = {
     let state = AppStore.useSelector(counterSelector)
 
     <div>
-      <div> {ReasonReact.string("Counter: " ++ string_of_int(state))} </div>
-      <button onClick={_ => dispatch(CounterAction(Increment))}>
-        {ReasonReact.string("++")}
-      </button>
-      <button onClick={_ => dispatch(CounterAction(Decrement))}>
-        {ReasonReact.string("--")}
-      </button>
+      <div> {React.string("Counter: " ++ string_of_int(state))} </div>
+      <button onClick={_ => dispatch(CounterAction(Increment))}> {React.string("++")} </button>
+      <button onClick={_ => dispatch(CounterAction(Decrement))}> {React.string("--")} </button>
     </div>
   }
 }
@@ -104,4 +100,4 @@ module RenderApp = {
   let make = () => <div> <CounterComponent /> <StringComponent /> </div>
 }
 
-ReactDOMRe.renderToElementWithId(<RenderApp />, "index")
+ReactDOM.querySelector("#index")->Belt.Option.forEach(ReactDOM.render(<RenderApp />))

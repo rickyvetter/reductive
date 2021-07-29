@@ -22,22 +22,22 @@ let make = () => {
     )
 
   <div>
-    <div> {ReasonReact.string("string: " ++ state.notACounter)} </div>
-    <div> {ReasonReact.string("counter: " ++ string_of_int(state.counter))} </div>
+    <div> {React.string("string: " ++ state.notACounter)} </div>
+    <div> {React.string("counter: " ++ string_of_int(state.counter))} </div>
     <button onClick={_ => dispatch(ThunkedStore.CounterAction(SimpleStore.Increment))}>
-      {ReasonReact.string("Increment")}
+      {React.string("Increment")}
     </button>
     <button onClick={_ => dispatch(ThunkedStore.CounterAction(SimpleStore.Decrement))}>
-      {ReasonReact.string("Decrement")}
+      {React.string("Decrement")}
     </button>
     <button onClick={_ => dispatch(ThunkedStore.StringAction(ThunkedStore.A))}>
-      {ReasonReact.string("add a")}
+      {React.string("add a")}
     </button>
     <button onClick={_ => dispatch(ReduxThunk.Thunk(incrementAsync))}>
-      {ReasonReact.string("Increment Async")}
+      {React.string("Increment Async")}
     </button>
     <button onClick={_ => dispatch(ReduxThunk.Thunk(incrementIfOdd))}>
-      {ReasonReact.string("Increment if Odd")}
+      {React.string("Increment if Odd")}
     </button>
   </div>
 }

@@ -12,7 +12,7 @@ dispatch(Decrement)
 
 dispatch(Increment)
 
-Reductive.Store.subscribe(SimpleStore.store, () =>
+let _: unit => unit = Reductive.Store.subscribe(SimpleStore.store, () =>
   Js.log(Reductive.Store.getState(SimpleStore.store))
 )
 
@@ -35,7 +35,7 @@ dispatch(Increment)
 
 dispatch(Increment)
 
-Reductive.Store.subscribe(ComplexStore.store, () =>
+let _: unit => unit = Reductive.Store.subscribe(ComplexStore.store, () =>
   Js.log(Reductive.Store.getState(ComplexStore.store))
 )
 

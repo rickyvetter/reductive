@@ -1,4 +1,5 @@
-ReactDOMRe.renderToElementWithId(
-  <ThunkedStore.Provider store=ThunkedStore.appStore> <DataRenderer /> </ThunkedStore.Provider>,
-  "index",
+ReactDOM.querySelector("#index")->Belt.Option.forEach(
+  ReactDOM.render(
+    <ThunkedStore.Provider store=ThunkedStore.appStore> <DataRenderer /> </ThunkedStore.Provider>,
+  ),
 )

@@ -82,9 +82,9 @@ module ContentComponent = {
     let dispatch = Store.useDispatch()
     let state = Store.useSelector(Store.Selectors.contentState)
     <div>
-      <div> {ReasonReact.string("Content: " ++ state)} </div>
-      <button onClick={_ => dispatch(StringAction(AppendA))}> {ReasonReact.string("+A")} </button>
-      <button onClick={_ => dispatch(StringAction(AppendB))}> {ReasonReact.string("+B")} </button>
+      <div> {React.string("Content: " ++ state)} </div>
+      <button onClick={_ => dispatch(StringAction(AppendA))}> {React.string("+A")} </button>
+      <button onClick={_ => dispatch(StringAction(AppendB))}> {React.string("+B")} </button>
     </div>
   }
 }
@@ -110,4 +110,4 @@ module RenderApp = {
     </div>
 }
 
-ReactDOMRe.renderToElementWithId(<RenderApp />, "index")
+ReactDOM.querySelector("#index")->Belt.Option.forEach(ReactDOM.render(<RenderApp />))
