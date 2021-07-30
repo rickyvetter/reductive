@@ -1,20 +1,14 @@
 {
   "name": "reductive",
   "refmt": 3,
-  "bsc-flags": [
-    "-bs-super-errors"
-  ],
+  "bsc-flags": ["-bs-super-errors"],
   "reason": {
     "react-jsx": 3
   },
-  "bs-dependencies": [
-    "reason-react"
-  ],
+  "bs-dependencies": ["@rescript/react"],
   "bs-dev-dependencies": [
-    "immutable-re",
     "@glennsl/bs-jest",
-    "bs-react-testing-library",
-    "reason-hooks-testing-library"
+    "@rescriptbr/react-testing-library"
   ],
   "sources": [
     "src",

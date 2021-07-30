@@ -1,4 +1,4 @@
 type appState = {
   counter: int,
-  notACounter: string
-};
+  notACounter: string,
+}
