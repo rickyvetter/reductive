@@ -1,7 +1,7 @@
 {
   "name": "reductive",
   "version": "2.1.1",
-  "description": "Redux in Reason",
+  "description": "Redux in ReScript",
   "main": "index.js",
   "scripts": {
     "build": "rescript build",
@@ -17,9 +17,7 @@
   "homepage": "https://github.com/reasonml-community/reductive#readme",
   "bugs": "https://github.com/reasonml-community/reductive/issues",
   "keywords": [
-    "reason",
-    "reasonml",
-    "ocaml",
+    "rescript",
     "redux",
     "state management"
   ],
