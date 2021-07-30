@@ -1,6 +1,39 @@
 open Jest
 open Expect
-open ReasonHooksTestingLibrary
+
+// Bindings to react-hooks testing library
+module HooksTestingLibrary = {
+  module Testing = {
+    module Result = {
+      @deriving({abstract: light})
+      type current<'value> = {current: 'value}
+
+      @deriving({abstract: light})
+      type t<'value> = {result: current<'value>}
+    }
+
+    module Options = {
+      @deriving({abstract: light})
+      type t<'props> = {
+        @optional
+        initialProps: 'props,
+        @optional
+        wrapper: React.component<{
+          "children": React.element,
+        }>,
+      }
+    }
+
+    @module("@testing-library/react-hooks")
+    external renderHook: (
+      @uncurry ('props => 'hook),
+      ~options: Options.t<'props>=?,
+      unit,
+    ) => Result.t<'hook> = "renderHook"
+  }
+}
+
+open HooksTestingLibrary
 
 module TestStoreContext = {
   type testState = {
@@ -51,7 +84,7 @@ let getResult = container => container->Testing.Result.result->Testing.Result.cu
 
 describe("reductiveContext", () => {
   open Testing
-  open ReactTestingLibrary
+  open! ReactTestingLibrary
 
   let options = Options.t(~wrapper=App.make, ())
   beforeEach(() => Reductive.Store.dispatch(TestStoreContext.appStore, Reset))
@@ -94,11 +127,8 @@ describe("reductiveContext", () => {
       let element = <App> <Comp /> </App>
       render(element) |> ignore
 
-      act(() => {
-        Reductive.Store.dispatch(TestStoreContext.appStore, Increment)
-        Reductive.Store.dispatch(TestStoreContext.appStore, Decrement)
-        ()
-      })
+      act(() => Reductive.Store.dispatch(TestStoreContext.appStore, Increment))
+      act(() => Reductive.Store.dispatch(TestStoreContext.appStore, Decrement))
 
       expect(renderedStates.contents) |> toEqual([0, 1, 0])
     })
@@ -119,11 +149,8 @@ describe("reductiveContext", () => {
       let element = <App> <Comp /> </App>
       render(element) |> ignore
 
-      act(() => {
-        Reductive.Store.dispatch(TestStoreContext.appStore, AppendA)
-        Reductive.Store.dispatch(TestStoreContext.appStore, AppendB)
-        ()
-      })
+      act(() => Reductive.Store.dispatch(TestStoreContext.appStore, AppendA))
+      act(() => Reductive.Store.dispatch(TestStoreContext.appStore, AppendB))
 
       expect(renderedStates.contents) |> toEqual([0])
     })
@@ -159,14 +186,11 @@ describe("reductiveContext", () => {
 
       render(element) |> ignore
 
-      act(() => {
-        Reductive.Store.dispatch(TestStoreContext.appStore, Increment) // state.counter - 1, prop - 0, total - 1
-        updateProp.contents() // state.counter - 1, prop - 1, total - 2
-        Reductive.Store.dispatch(TestStoreContext.appStore, Increment) // state.counter - 2, prop - 1, total - 3
-        updateProp.contents() // state.counter - 2, prop - 2, total - 4
-        Reductive.Store.dispatch(TestStoreContext.appStore, Increment) // state.counter - 3, prop - 2, total - 5
-        ()
-      })
+      act(() => Reductive.Store.dispatch(TestStoreContext.appStore, Increment)) // state.counter - 1, prop - 0, total - 1
+      act(() => updateProp.contents()) // state.counter - 1, prop - 1, total - 2
+      act(() => Reductive.Store.dispatch(TestStoreContext.appStore, Increment)) // state.counter - 2, prop - 1, total - 3
+      act(() => updateProp.contents()) // state.counter - 2, prop - 2, total - 4
+      act(() => Reductive.Store.dispatch(TestStoreContext.appStore, Increment)) // state.counter - 3, prop - 2, total - 5
 
       // changing selector function that depends on props leads to double re-render and duplicated state values
       let distinctRenderState =
@@ -207,12 +231,9 @@ describe("reductiveContext", () => {
       // start spying after unmount
       let spy = setupSpy(selectorSpyObject.contents)
 
-      act(() => {
-        Reductive.Store.dispatch(TestStoreContext.appStore, Increment)
-        Reductive.Store.dispatch(TestStoreContext.appStore, Decrement)
-        Reductive.Store.dispatch(TestStoreContext.appStore, Increment)
-        ()
-      })
+      act(() => Reductive.Store.dispatch(TestStoreContext.appStore, Increment))
+      act(() => Reductive.Store.dispatch(TestStoreContext.appStore, Decrement))
+      act(() => Reductive.Store.dispatch(TestStoreContext.appStore, Increment))
 
       let expectSelectorToHaveBeenCalled: spyReturnMockValue => unit = %raw(`
          function (spy) {
@@ -269,12 +290,10 @@ describe("reductiveContext", () => {
       let element = <App> <Comp /> </App>
       render(element) |> ignore
 
-      act(() => {
-        forceRender.contents()
-        forceRender.contents()
-        forceRender.contents()
-        ()
-      })
+      act(() => forceRender.contents())
+      act(() => forceRender.contents())
+      act(() => forceRender.contents())
+
       expect(dispatchRerenders.contents) |> toEqual(1)
     })
   )
